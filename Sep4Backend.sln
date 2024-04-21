@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{187D61A8-55C5-4356-BFBD-C7E42D22FF40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTInterfacing", "IoTInterfacing\IoTInterfacing.csproj", "{FE6B812D-0888-4EA2-ABF4-EDF8BB06503D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseInterfacing", "DatabaseInterfacing\DatabaseInterfacing.csproj", "{BF3FFC7E-EBE6-47BA-BB67-9C0F15ADD470}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{187D61A8-55C5-4356-BFBD-C7E42D22FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{187D61A8-55C5-4356-BFBD-C7E42D22FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{187D61A8-55C5-4356-BFBD-C7E42D22FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{187D61A8-55C5-4356-BFBD-C7E42D22FF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE6B812D-0888-4EA2-ABF4-EDF8BB06503D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6B812D-0888-4EA2-ABF4-EDF8BB06503D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6B812D-0888-4EA2-ABF4-EDF8BB06503D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6B812D-0888-4EA2-ABF4-EDF8BB06503D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF3FFC7E-EBE6-47BA-BB67-9C0F15ADD470}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF3FFC7E-EBE6-47BA-BB67-9C0F15ADD470}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF3FFC7E-EBE6-47BA-BB67-9C0F15ADD470}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF3FFC7E-EBE6-47BA-BB67-9C0F15ADD470}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
