@@ -11,7 +11,7 @@ public class PlantData
 
     [Required]
     [Column("plant_name")]
-    public required string PlantName { get; set; }
+    public string PlantName { get; set; }
 
     [Column("water_temperature")]
     public float WaterTemperature { get; set; }

@@ -7,14 +7,11 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Set up DbContextOptions
 
         using (var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions()))
         {
-            // Ensure the database is created
             dbContext.Database.EnsureCreated();
-
-            // Insert a new PlantData record
+            
             var plantData = new PlantData
             {
                 PlantName = "Test Plant",
