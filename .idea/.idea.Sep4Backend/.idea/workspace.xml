@@ -10,32 +10,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97690196-0a0d-4f2d-bfb9-c69c63086eba" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Auth/AuthorizationPolicies.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DatabaseInterfacing/Domain/EntityFramework/User.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Application/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Application/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Application/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Application/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseInterfacing/Domain/DTOs/DisplayPlantDataDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseInterfacing/Domain/DTOs/DisplayPlantDataDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseInterfacing/Domain/EntityFramework/PlantData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseInterfacing/Domain/EntityFramework/PlantData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseInterfacing/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseInterfacing/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseInterfacing/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseInterfacing/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IoTInterfacing/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/IoTInterfacing/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IoTInterfacing/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/IoTInterfacing/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sep4Backend.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Sep4Backend.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/Controllers/PlantsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/Controllers/PlantsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/WebAPI.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/WebAPI.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/Debug/net7.0/WebAPI.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/Debug/net7.0/WebAPI.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/Debug/net7.0/WebAPI.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/Debug/net7.0/WebAPI.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/WebAPI.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/WebAPI.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/WebAPI.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/WebAPI.csproj.nuget.g.targets" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebAPI/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/WebAPI/obj/rider.project.restore.info" afterDir="false" />
-    </list>
+    <list default="true" id="97690196-0a0d-4f2d-bfb9-c69c63086eba" name="Changes" comment="Bruh 2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +18,23 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "FlyingRaichu"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="bb81b8a7-ba55-4483-9b75-7c6d572d919f" />
+        <option name="url" value="https://github.com/FlyingRaichu/Sep4Backend.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Auth/obj/Debug/net7.0/.NETCoreApp,Version=v7.0.AssemblyAttributes.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -153,8 +145,41 @@
       <updated>1713696317518</updated>
       <workItem from="1713696323826" duration="10889000" />
       <workItem from="1713965396950" duration="2814000" />
-      <workItem from="1713968265944" duration="79000" />
+      <workItem from="1713968265944" duration="399000" />
     </task>
+    <task id="LOCAL-00001" summary="Authentication base.">
+      <option name="closed" value="true" />
+      <created>1713968374117</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1713968374117</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Bruh">
+      <option name="closed" value="true" />
+      <created>1713968488786</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1713968488786</updated>
+    </task>
+    <task id="LOCAL-00003" summary="GitIgnore fix">
+      <option name="closed" value="true" />
+      <created>1713968643048</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1713968643048</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Bruh 2">
+      <option name="closed" value="true" />
+      <created>1713968662515</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1713968662515</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -174,5 +199,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Authentication base." />
+    <MESSAGE value="Bruh" />
+    <MESSAGE value="GitIgnore fix" />
+    <MESSAGE value="Bruh 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bruh 2" />
   </component>
 </project>
