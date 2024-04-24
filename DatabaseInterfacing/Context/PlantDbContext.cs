@@ -11,5 +11,4 @@ public class PlantDbContext : DbContext
     
     public DbSet<PlantData> PlantData { get; set; }
     public DbSet<User> Users { get; set; }
-    public DbSet<Admin> Admins { get; set; }
 }
