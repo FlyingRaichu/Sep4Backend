@@ -1,4 +1,5 @@
 ﻿using Application.LogicInterfaces;
+using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +17,14 @@ public class PlantsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync()
+    public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
+        [FromQuery] float? waterTemperature,
+        [FromQuery] float? phLevel)
     {
         try
         {
-            var plants = await _logic.GetAsync();
+            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel);
+            var plants = await _logic.GetAsync(searchDto);
             return Ok(plants);
         }
         catch (Exception e)
