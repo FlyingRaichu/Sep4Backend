@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseInterfacing", "Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "Auth\Auth.csproj", "{C4100356-7336-4B06-B26D-7C4D4427C726}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbtestForreal", "DbtestForreal\DbtestForreal.csproj", "{ED71819E-BD10-4536-A2DF-3A78C668DFC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53EF18B9-D35C-474F-8B58-F4D6DF96F9C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4100356-7336-4B06-B26D-7C4D4427C726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4100356-7336-4B06-B26D-7C4D4427C726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4100356-7336-4B06-B26D-7C4D4427C726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4100356-7336-4B06-B26D-7C4D4427C726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

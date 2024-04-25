@@ -3,19 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatabaseInterfacing.Domain.EntityFramework;
 
-[Table("PlantData")]
+[Table("plant_data")]
 public class PlantData
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
-    [Column("PlantName")]
+    [Column("plant_name")]
     public string PlantName { get; set; }
 
-    [Column("WaterTemperature")]
+    [Column("water_temperature")]
     public float WaterTemperature { get; set; }
 
-    [Column("PHLevel")]
-    public float PHLevel { get; set; }
+    [Column("ph_level")]
+    public float PhLevel { get; set; }
 }

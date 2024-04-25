@@ -8,12 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.18" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Application\Application.csproj" />
+      <ProjectReference Include="..\Auth\Auth.csproj" />
       <ProjectReference Include="..\DatabaseInterfacing\DatabaseInterfacing.csproj" />
     </ItemGroup>
 

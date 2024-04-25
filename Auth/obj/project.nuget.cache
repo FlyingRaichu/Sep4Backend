@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "W/pfxdRI4AIbwcqMP4oWZn3iu8lZ/xgH6x3tHaRNklMQF5l+thn7m8Ouw5p7Xy9mb+HgSGQynsjFMuP7ajyUMw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Misho\\RiderProjects\\Sep4Backend\\Auth\\Auth.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.aspnetcore.authorization\\7.0.18\\microsoft.aspnetcore.authorization.7.0.18.nupkg.sha512",
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.aspnetcore.metadata\\7.0.18\\microsoft.aspnetcore.metadata.7.0.18.nupkg.sha512",
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.1\\microsoft.extensions.logging.abstractions.7.0.1.nupkg.sha512",
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.extensions.options\\7.0.1\\microsoft.extensions.options.7.0.1.nupkg.sha512",
+    "C:\\Users\\Misho\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

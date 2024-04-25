@@ -9,11 +9,13 @@ namespace Sep4Backend.Controllers;
 [Route("[controller]")]
 public class PlantsController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
     private readonly IPlantDataLogic _logic;
 
-    public PlantsController(IPlantDataLogic logic)
+    public PlantsController(IPlantDataLogic logic, IConfiguration configuration)
     {
         _logic = logic;
+        _configuration = configuration;
     }
 
     [HttpGet]

@@ -99,6 +99,10 @@
               "target": "Package",
               "version": "[7.0.18, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[7.0.11, )"
