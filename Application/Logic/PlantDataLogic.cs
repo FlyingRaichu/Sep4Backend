@@ -28,7 +28,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         if (searchDto.PHLevel != null)
         {
-            query = query.Where(plant => plant.PHLevel.Equals(searchDto.PHLevel));
+            query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
         }
 
         return await query.ToListAsync();
