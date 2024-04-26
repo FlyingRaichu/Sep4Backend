@@ -9,10 +9,13 @@ namespace DatabaseInterfacing;
 
 public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext>
 {
-    private static readonly IConfiguration configuration = new ConfigurationBuilder()
+    //This creates a configuration based on the appsettings.JSON in this particular project 
+    private static readonly IConfiguration Configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .Build();
 
+
+    //Use this anytime you need to create a database context option
     public static DbContextOptions<PlantDbContext> BuildConnectionOptions()
     {
         var optionsBuilder = new DbContextOptionsBuilder<PlantDbContext>();
@@ -23,8 +26,7 @@ public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext
 
     private static string GetConnectionString()
     {
-        return configuration.GetConnectionString("DefaultConnection") ??
-               "Host=lucky.db.elephantsql.com;Port=5432;Database=odvlulua;Username=odvlulua;Password=oBlgMTohINy3iW30-RxXfKY0GyrtS1c2;SSL Mode=Require;Trust Server Certificate=true;";
+        return Configuration.GetConnectionString("DefaultConnection");
     }
 
 
