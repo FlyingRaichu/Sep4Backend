@@ -11,4 +11,9 @@
       <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.18" />
     </ItemGroup>
 
+
+    <ItemGroup>
+      <ProjectReference Include="..\DatabaseInterfacing\DatabaseInterfacing.csproj" />
+    </ItemGroup>
+
 </Project>

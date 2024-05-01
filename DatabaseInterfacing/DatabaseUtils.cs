@@ -14,7 +14,6 @@ public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .Build();
 
-
     //Use this anytime you need to create a database context option
     public static DbContextOptions<PlantDbContext> BuildConnectionOptions()
     {
@@ -24,11 +23,12 @@ public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext
         return optionsBuilder.Options;
     }
 
+    //Pulls the connection string from the local appsettings.json
     private static string GetConnectionString()
     {
-        return Configuration.GetConnectionString("DefaultConnection");
+        return Configuration.GetConnectionString("DefaultConnection") ??
+               throw new Exception("Your connection string is not configured correctly in appsettings.json.");
     }
-
 
     //This is for Migrations, no touchie
     public PlantDbContext CreateDbContext(string[] args)
