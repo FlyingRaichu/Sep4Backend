@@ -1,12 +1,14 @@
 ﻿using Application.LogicInterfaces;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Sep4Backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class PlantsController : ControllerBase
 {
     private readonly IConfiguration _configuration;

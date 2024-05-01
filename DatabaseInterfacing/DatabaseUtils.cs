@@ -9,9 +9,9 @@ namespace DatabaseInterfacing;
 
 public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext>
 {
-    //This creates a configuration based on the appsettings.JSON in this particular project 
+    //This creates a configuration based on the appsettings.json in this particular project 
     private static readonly IConfiguration Configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .Build();
 
     //Use this anytime you need to create a database context option
@@ -27,7 +27,8 @@ public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext
     private static string GetConnectionString()
     {
         return Configuration.GetConnectionString("DefaultConnection") ??
-               throw new Exception("Your connection string is not configured correctly in appsettings.json.");
+               throw new Exception(
+                   "Your connection string is not configured correctly in WebAPI/appsettings.json, or doesn't exist.");
     }
 
     //This is for Migrations, no touchie

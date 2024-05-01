@@ -2,6 +2,8 @@ using System.Text;
 using Application.Logic;
 using Application.LogicInterfaces;
 using Auth;
+using Auth.ServiceInterfaces;
+using Auth.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
+builder.Services.AddScoped<IUserAuthService, UserAuthService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -38,8 +41,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 
 app.UseAuthentication();
