@@ -10,8 +10,6 @@ public class UserAuthService : IUserAuthService
 {
     public async Task<User> ValidateUser(UserValidationDto dto)
     {
-        await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-        
-        
+        throw new NotImplementedException();
     }
 }
