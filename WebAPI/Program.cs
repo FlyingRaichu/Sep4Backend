@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using Application.Logic;
 using Application.LogicInterfaces;
@@ -19,6 +20,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.WebHost.UseKestrel(options =>
+{
+    options.Listen(IPAddress.Any, 5021);
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
