@@ -12,14 +12,15 @@ public class ConnectionController : IConnectionController
     //there to have methods that handle request/response protocols, one for requests from here to the arduino, and one for vise-versa
     private bool IsConnected { get; set; } = true;
     private TcpClient _client = new TcpClient();
-    
 
+    //Method for opening a server to communicate with the Arduino
     public async Task EstablishConnection(int port)
     {
         var ipAddress = IPAddress.Any;
         var listener = new TcpListener(ipAddress, port);
         listener.Start();
-        Console.WriteLine($"Server's up on on ip {ipAddress.ToString()}, Waiting for Arduino connection on port {port}...");
+        Console.WriteLine(
+            $"Server's up on on ip {ipAddress.ToString()}, Waiting for Arduino connection on port {port}...");
 
         while (IsConnected)
         {
@@ -31,13 +32,15 @@ public class ConnectionController : IConnectionController
             _client = client;
         }
     }
-    
+
+
+    //Method to be used for making requests to the Arduino
     public async Task<string> SendRequestToArduino(string apiParameters)
     {
         var responseData = "No response returned.";
         try
         {
-            // Assuming you have a single connected client, you can use it for communication
+            //Checking for client connection
             if (_client.Connected)
             {
                 // Get the network stream for reading/writing
