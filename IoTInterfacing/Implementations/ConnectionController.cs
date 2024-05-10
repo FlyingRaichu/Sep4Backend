@@ -14,7 +14,7 @@ public class ConnectionController : IConnectionController
     private TcpClient _client = new TcpClient();
 
     //Method for opening a server to communicate with the Arduino
-    public async Task EstablishConnection(int port)
+    public async Task EstablishConnectionAsync(int port)
     {
         var ipAddress = IPAddress.Any;
         var listener = new TcpListener(ipAddress, port);
@@ -35,7 +35,7 @@ public class ConnectionController : IConnectionController
 
 
     //Method to be used for making requests to the Arduino
-    public async Task<string> SendRequestToArduino(string apiParameters)
+    public async Task<string> SendRequestToArduinoAsync(string apiParameters)
     {
         var responseData = "No response returned.";
         try

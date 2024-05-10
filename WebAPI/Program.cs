@@ -7,6 +7,8 @@ using Auth.ServiceInterfaces;
 using Auth.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
+using IoTInterfacing.Implementations;
+using IoTInterfacing.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.WebHost.UseKestrel(options =>
 {
     options.Listen(IPAddress.Any, 5021);
@@ -61,6 +64,12 @@ app.UseCors(x => x
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Get the ConnectionController instance
+var connectionController = app.Services.GetRequiredService<IConnectionController>();
+
+// Start the server asynchronously 
+await connectionController.EstablishConnectionAsync(23);
 
 app.MapControllers();
 

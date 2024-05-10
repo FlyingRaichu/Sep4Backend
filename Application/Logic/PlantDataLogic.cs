@@ -1,14 +1,24 @@
+using System.Text.Json;
 using Application.LogicInterfaces;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
+using IoTInterfacing.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Application.Logic;
 
 public class PlantDataLogic : IPlantDataLogic
 {
+    private readonly IConnectionController _connectionController;
+
+    public PlantDataLogic(IConnectionController connectionController)
+    {
+        _connectionController = connectionController;
+    }
+
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
     {
         await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
@@ -32,5 +42,31 @@ public class PlantDataLogic : IPlantDataLogic
         }
 
         return await query.ToListAsync();
+    }
+
+    public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
+    {
+        var jsonString =
+            await _connectionController
+                .SendRequestToArduinoAsync("PLACEHOLDER"); //TODO change this to the actual call's parameters
+
+        //Deserialize the JSON string into a PlantData object
+        var plantData = JsonSerializer.Deserialize<PlantData>(jsonString,
+            new JsonSerializerOptions //NOTE: This might not be this simple considering we
+                //have to manually deserialize a bunch of fields based on what IoT are going to be sending
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var status = plantData?.WaterTemperature switch
+        {
+            //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
+            >= 50 and <= 75 => "Warn",
+            > 75 => "Dang",
+            _ => "Norm"
+        };
+
+        return new DisplayPlantTemperatureDto(plantData!.WaterTemperature, status);
     }
 }
