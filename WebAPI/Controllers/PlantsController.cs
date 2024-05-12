@@ -54,11 +54,11 @@ public class PlantsController : ControllerBase
     }
     
     [HttpGet("plants/{id:int}/waterEC")]
-    public async Task<ActionResult<string>> GetWaterEC(int id)
+    public async Task<ActionResult<string>> GePlantEC(int id)
     {
         try
         {
-            var response = await _logic.CheckWaterECAsync(id);
+            var response = await _logic.CheckECAsync(id);
             return Ok(response);
         }
         catch (Exception e)
