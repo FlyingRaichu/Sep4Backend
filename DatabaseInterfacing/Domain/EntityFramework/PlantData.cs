@@ -18,4 +18,7 @@ public class PlantData
 
     [Column("ph_level")]
     public float PhLevel { get; set; }
+    
+    [Column("water_ec")]
+    public float WaterEC { get; set; }
 }
