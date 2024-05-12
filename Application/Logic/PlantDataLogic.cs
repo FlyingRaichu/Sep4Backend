@@ -75,7 +75,7 @@ public class PlantDataLogic : IPlantDataLogic
         return new DisplayPlantTemperatureDto(plantData!.WaterTemperature, status);
     }
 
-    public async Task<DisplayWaterECStatusDto?> CheckWaterECAsync(int id)
+    public async Task<DisplayWaterECDto?> CheckWaterECAsync(int id)
     {
         var jsonString =
             await _connectionController
@@ -98,7 +98,7 @@ public class PlantDataLogic : IPlantDataLogic
             _ => "Warn"
         };
 
-        return new DisplayWaterECStatusDto(plantData!.WaterEC, status);
+        return new DisplayWaterECDto(plantData!.WaterEC, status);
     }
 
 }

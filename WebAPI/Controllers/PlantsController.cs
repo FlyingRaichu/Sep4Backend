@@ -22,11 +22,12 @@ public class PlantsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
         [FromQuery] float? waterTemperature,
-        [FromQuery] float? phLevel)
+        [FromQuery] float? phLevel,
+        [FromQuery] float? waterEC)
     {
         try
         {
-            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel);
+            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel, waterEC);
             var plants = await _logic.GetAsync(searchDto);
             return Ok(plants);
         }
@@ -43,6 +44,21 @@ public class PlantsController : ControllerBase
         try
         {
             var response = await _logic.CheckTemperatureAsync(id);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet("plants/{id:int}/waterEC")]
+    public async Task<ActionResult<string>> GetWaterEC(int id)
+    {
+        try
+        {
+            var response = await _logic.CheckWaterECAsync(id);
             return Ok(response);
         }
         catch (Exception e)
