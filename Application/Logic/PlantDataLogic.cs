@@ -1,8 +1,11 @@
+using System.Text.Json;
 using Application.LogicInterfaces;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
+using IoTInterfacing.Implementations;
+using IoTInterfacing.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Logic;
@@ -32,5 +35,29 @@ public class PlantDataLogic : IPlantDataLogic
         }
 
         return await query.ToListAsync();
+    }
+    
+    public async Task<PlantPhDto> CheckPhLevelAsync(int id)
+    {
+        IConnectionController controller = new ConnectionController();
+        string response = await controller.SendRequestToArduino("PARAMS");
+
+        PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
+        if (plant == null)
+        {
+            throw new Exception("Plant does not exist");
+        }
+
+        PlantPhDto dto = new PlantPhDto()
+        {
+            PlantId = plant.Id,
+            PhLevel = plant.PhLevel
+        };
+
+        if (dto.PhLevel >= 6.2 || dto.PhLevel <= 6.8)
+        {
+            dto.IsOkay = true;
+        }
+        return dto;
     }
 }

@@ -36,4 +36,19 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    [HttpGet("plants/{id}/ph")]
+    public async Task<ActionResult<PlantPhDto>> CheckPhLevelAsync(int id)
+    {
+        try
+        {
+            PlantPhDto response = await _logic.CheckPhLevelAsync(id);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
