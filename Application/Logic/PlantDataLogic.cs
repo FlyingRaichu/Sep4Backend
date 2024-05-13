@@ -5,6 +5,7 @@ using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Interfaces;
+using IoTInterfacing.Util;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -46,27 +47,38 @@ public class PlantDataLogic : IPlantDataLogic
 
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
     {
-        var jsonString =
-            await _connectionController
-                .SendRequestToArduinoAsync("PLACEHOLDER"); //TODO change this to the actual call's parameters
+    var jsonString =
+        await _connectionController
+            .SendRequestToArduinoAsync(ApiParameters.DataRequest);
+//     var jsonString = @"
+// {
+//     ""name"" : ""monitoring_results"",
+//     ""readings"": [{
+//         ""water_conductivity"": 2622,
+//         ""water_temperature"" : 23.5
+//     }]
+// }";
 
-        //Deserialize the JSON string into a PlantData object
-        var plantData = JsonSerializer.Deserialize<PlantData>(jsonString,
-            new JsonSerializerOptions //NOTE: This might not be this simple considering we
-                //have to manually deserialize a bunch of fields based on what IoT are going to be sending
+
+
+    //Deserialize the JSON string into a PlantData object
+    var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
+            new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
-        var status = plantData?.WaterTemperature switch
-        {
-            //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
-            >= 50 and <= 75 => "Warn",
-            > 75 => "Dang",
-            _ => "Norm"
-        };
+    var status = plantData?.Readings.FirstOrDefault().WaterTemperature switch
+    {
+        //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
+        >= 50 and <= 75 => "Warn",
+        > 75 => "Dang",
+        _ => "Norm"
+    };
 
-        return new DisplayPlantTemperatureDto(plantData!.WaterTemperature, status);
-    }
+    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault().WaterTemperature}");
+    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault().WaterConductivity, status);
+}
+
 }

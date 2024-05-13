@@ -1,16 +1,14 @@
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Application.Logic;
 using Application.LogicInterfaces;
 using Auth;
 using Auth.ServiceInterfaces;
 using Auth.Services;
-using DatabaseInterfacing;
-using DatabaseInterfacing.Context;
 using IoTInterfacing.Implementations;
 using IoTInterfacing.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,9 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
-builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.WebHost.UseKestrel(options =>
 {
     options.Listen(IPAddress.Any, 5021);
@@ -49,8 +47,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // app.UseSwagger();
-    // app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseAuthentication();
@@ -68,9 +66,9 @@ app.UseAuthorization();
 // Get the ConnectionController instance
 var connectionController = app.Services.GetRequiredService<IConnectionController>();
 
-// Start the server asynchronously 
-await connectionController.EstablishConnectionAsync(23);
+// Start the background task to establish the connection
+_ = Task.Run(async () => await connectionController.EstablishConnectionAsync(23));
 
+// Run the application
 app.MapControllers();
-
 app.Run();
