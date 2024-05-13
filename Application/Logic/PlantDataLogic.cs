@@ -61,7 +61,7 @@ public class PlantDataLogic : IPlantDataLogic
 
 
 
-    //Deserialize the JSON string into a PlantData object
+    //Deserialize the JSON string into a MonitoringResultDto object
     var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
             new JsonSerializerOptions
                 {
@@ -69,7 +69,7 @@ public class PlantDataLogic : IPlantDataLogic
                 });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
-    var status = plantData?.Readings.FirstOrDefault().WaterTemperature switch
+    var status = plantData?.Readings.FirstOrDefault()?.WaterTemperature switch
     {
         //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
         >= 50 and <= 75 => "Warn",
@@ -77,8 +77,8 @@ public class PlantDataLogic : IPlantDataLogic
         _ => "Norm"
     };
 
-    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault().WaterTemperature}");
-    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault().WaterConductivity, status);
+    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
+    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
 }
 
 }
