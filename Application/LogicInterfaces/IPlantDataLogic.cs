@@ -6,5 +6,6 @@ namespace Application.LogicInterfaces;
 public interface IPlantDataLogic
 {
     Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto);
+    Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id);
     Task<PlantPhDto> CheckPhLevelAsync(int id);
 }
