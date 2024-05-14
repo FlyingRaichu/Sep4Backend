@@ -84,14 +84,14 @@ public class PlantDataLogic : IPlantDataLogic
 
         var status = DetermineTemperatureStatus(plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
 
-    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
-    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
-}
-    
+        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
+        return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
+    }
+
     public async Task<PlantPhDto> CheckPhLevelAsync(int id)
     {
         IConnectionController controller = new ConnectionController();
-        string response = await controller.SendRequestToArduinoAsync("PARAMS");
+        string response = await controller.SendRequestToArduinoAsync(ApiParameters.DataRequest);
 
         PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
         if (plant == null)
@@ -109,15 +109,16 @@ public class PlantDataLogic : IPlantDataLogic
         {
             dto.IsOkay = true;
         }
+
         return dto;
     }
 
     public async Task<DisplayPlantECDto?> CheckECAsync(int id)
     {
-        var jsonString = 
+        var jsonString =
             await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-        
-        
+
+
         var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
             new JsonSerializerOptions
             {
@@ -136,7 +137,7 @@ public class PlantDataLogic : IPlantDataLogic
         Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
         return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.WaterConductivity, status);
     }
-    
+
     private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)
     {
         var isWarningRange =
@@ -151,5 +152,4 @@ public class PlantDataLogic : IPlantDataLogic
 
         return isWarningRange ? "Warn" : "Norm";
     }
-
 }
