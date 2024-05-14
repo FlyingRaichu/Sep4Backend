@@ -42,7 +42,7 @@ public class PlantDataLogic : IPlantDataLogic
         return await query.ToListAsync();
     }
     
-    public async Task<PlantWaterFlowDto> CheckWaterFlowAsync(int id)
+    public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
     {
         IConnectionController controller = new ConnectionController();
         string response = await controller.SendRequestToArduino("PARAMS");
@@ -53,17 +53,10 @@ public class PlantDataLogic : IPlantDataLogic
             throw new Exception("Plant does not exist");
         }
 
-        PlantWaterFlowDto dto = new PlantWaterFlowDto()
+        DisplayPlantWaterFlowDto dto = new DisplayPlantWaterFlowDto()
         {
-            PlantId = plant.Id,
             WaterFlow = plant.WaterFlow
         };
-        
-        //test variables
-        if (dto.WaterFlow >= 1.1 || dto.WaterFlow <= 2.2)
-        {
-            dto.IsOkay = true;
-        }
         return dto;
     }
 }
