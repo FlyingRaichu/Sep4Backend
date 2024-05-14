@@ -6,6 +6,8 @@ using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Interfaces;
 using IoTInterfacing.Util;
+using IoTInterfacing.Implementations;
+using IoTInterfacing.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -44,7 +46,6 @@ public class PlantDataLogic : IPlantDataLogic
 
         return await query.ToListAsync();
     }
-
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
     {
     var jsonString =
@@ -80,5 +81,28 @@ public class PlantDataLogic : IPlantDataLogic
     Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
     return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
 }
+    
+    public async Task<PlantPhDto> CheckPhLevelAsync(int id)
+    {
+        IConnectionController controller = new ConnectionController();
+        string response = await controller.SendRequestToArduino("PARAMS");
 
+        PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
+        if (plant == null)
+        {
+            throw new Exception("Plant does not exist");
+        }
+
+        PlantPhDto dto = new PlantPhDto()
+        {
+            PlantId = plant.Id,
+            PhLevel = plant.PhLevel
+        };
+
+        if (dto.PhLevel >= 6.2 || dto.PhLevel <= 6.8)
+        {
+            dto.IsOkay = true;
+        }
+        return dto;
+    }
 }
