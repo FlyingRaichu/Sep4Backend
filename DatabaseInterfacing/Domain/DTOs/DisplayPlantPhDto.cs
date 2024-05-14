@@ -2,7 +2,7 @@
 
 namespace DatabaseInterfacing.Domain.DTOs;
 
-public class PlantPhDto
+public class DisplayPlantPhDto
 {
     public float PhLevel { get; set; }
     public string? Status { get; set; }

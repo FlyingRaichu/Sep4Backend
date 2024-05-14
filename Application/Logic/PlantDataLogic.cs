@@ -82,27 +82,35 @@ public class PlantDataLogic : IPlantDataLogic
     return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
 }
     
-    public async Task<PlantPhDto> CheckPhLevelAsync(int id)
+    public async Task<DisplayPlantPhDto> CheckPhLevelAsync()
     {
-        IConnectionController controller = new ConnectionController();
-        string response = await controller.SendRequestToArduino("PARAMS");
-
-        PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
-        if (plant == null)
+        //string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        var response = @"
         {
-            throw new Exception("Plant does not exist");
-        }
-
-        PlantPhDto dto = new PlantPhDto()
+            ""name"" : ""monitoring_results"",
+            ""readings"": [{
+                ""water_conductivity"": 2622,
+                ""water_temperature"" : 23.5,
+                ""water_ph"" : 6.4
+            }]
+        }";
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, 
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        
+        var status = plantData?.Readings?.FirstOrDefault()?.WaterPhLevel switch
         {
-            PlantId = plant.Id,
-            PhLevel = plant.PhLevel
+            >= (float) 6.8 or <= (float) 6.2 => "Warn",
+            _ => "Norm"
         };
-
-        if (dto.PhLevel >= 6.2 || dto.PhLevel <= 6.8)
+        DisplayPlantPhDto dto = new DisplayPlantPhDto()
         {
-            dto.IsOkay = true;
-        }
+            Status = status,
+            PhLevel = (float) plantData?.Readings?.FirstOrDefault()?.WaterPhLevel!
+        };
         return dto;
     }
 }
