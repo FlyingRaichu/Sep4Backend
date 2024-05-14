@@ -24,11 +24,12 @@ public class PlantsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
         [FromQuery] float? waterTemperature,
-        [FromQuery] float? phLevel)
+        [FromQuery] float? phLevel,
+        [FromQuery] float? waterEC)
     {
         try
         {
-            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel);
+            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel, waterEC);
             var plants = await _logic.GetAsync(searchDto);
             return Ok(plants);
         }
@@ -76,6 +77,36 @@ public class PlantsController : ControllerBase
         {
             await _thresholdConfigurationService.UpdateConfigurationAsync(configurationDto);
             return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+       
+    [HttpGet("plants/{id}/ph")]
+    public async Task<ActionResult<PlantPhDto>> CheckPhLevelAsync(int id)
+    {
+        try
+        {
+            PlantPhDto response = await _logic.CheckPhLevelAsync(id);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet("{id:int}/waterEC")]
+    public async Task<ActionResult<string>> GetPlantEC(int id)
+    {
+        try
+        {
+            var response = await _logic.CheckECAsync(id);
+            return Ok(response);
         }
         catch (Exception e)
         {

@@ -7,6 +7,8 @@ using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Interfaces;
 using IoTInterfacing.Util;
+using IoTInterfacing.Implementations;
+using IoTInterfacing.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -46,6 +48,11 @@ public class PlantDataLogic : IPlantDataLogic
             query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
         }
 
+        if (searchDto.WaterEC != null)
+        {
+            query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
+        }
+
         return await query.ToListAsync();
     }
 
@@ -77,11 +84,59 @@ public class PlantDataLogic : IPlantDataLogic
 
         var status = DetermineTemperatureStatus(plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
 
-        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
-        return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
+    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
+    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
+}
+    
+    public async Task<PlantPhDto> CheckPhLevelAsync(int id)
+    {
+        IConnectionController controller = new ConnectionController();
+        string response = await controller.SendRequestToArduinoAsync("PARAMS");
+
+        PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
+        if (plant == null)
+        {
+            throw new Exception("Plant does not exist");
+        }
+
+        PlantPhDto dto = new PlantPhDto()
+        {
+            PlantId = plant.Id,
+            PhLevel = plant.PhLevel
+        };
+
+        if (dto.PhLevel >= 6.2 || dto.PhLevel <= 6.8)
+        {
+            dto.IsOkay = true;
+        }
+        return dto;
     }
 
+    public async Task<DisplayPlantECDto?> CheckECAsync(int id)
+    {
+        var jsonString = 
+            await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        
+        
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
+        var status = plantData?.Readings.FirstOrDefault()?.WaterConductivity switch
+        {
+            //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
+            >= 50 and <= 75 => "Warn",
+            > 75 => "Dang",
+            _ => "Norm"
+        };
+
+        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
+        return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.WaterConductivity, status);
+    }
+    
     private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)
     {
         var isWarningRange =
@@ -96,4 +151,5 @@ public class PlantDataLogic : IPlantDataLogic
 
         return isWarningRange ? "Warn" : "Norm";
     }
+
 }
