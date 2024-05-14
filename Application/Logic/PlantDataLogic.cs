@@ -82,10 +82,11 @@ public class PlantDataLogic : IPlantDataLogic
     return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
 }
     
-    public async Task<DisplayPlantPhDto> CheckPhLevelAsync()
+    public async Task<DisplayPlantPhDto> GetPhLevelAsync()
     {
-        //string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-        var response = @"
+        // For Testing: Remove Comments from json, and comment out "string response = ..."
+        
+        /* var response = @"
         {
             ""name"" : ""monitoring_results"",
             ""readings"": [{
@@ -93,24 +94,16 @@ public class PlantDataLogic : IPlantDataLogic
                 ""water_temperature"" : 23.5,
                 ""water_ph"" : 6.4
             }]
-        }";
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, 
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        }"; */
         
-        var status = plantData?.Readings?.FirstOrDefault()?.WaterPhLevel switch
+        string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
         {
-            >= (float) 6.8 or <= (float) 6.2 => "Warn",
-            _ => "Norm"
-        };
-        DisplayPlantPhDto dto = new DisplayPlantPhDto()
-        {
-            Status = status,
-            PhLevel = (float) plantData?.Readings?.FirstOrDefault()?.WaterPhLevel!
-        };
-        return dto;
+            PropertyNameCaseInsensitive = true
+        });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        float? phLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel;
+        string status = phLevel >= 6.8f || phLevel <= 6.2f ? "Warn" : "Norm";
+        return new DisplayPlantPhDto() { Status = status, PhLevel = phLevel };
     }
 }

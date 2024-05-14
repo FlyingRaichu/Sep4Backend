@@ -54,11 +54,11 @@ public class PlantsController : ControllerBase
     }
 
     [HttpGet("plant/ph")]
-    public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync()
+    public async Task<ActionResult<DisplayPlantPhDto>> GetPlantPhLevelAsync()
     {
         try
         {
-            DisplayPlantPhDto response = await _logic.CheckPhLevelAsync();
+            DisplayPlantPhDto response = await _logic.GetPhLevelAsync();
             return Ok(response);
         }
         catch (Exception e)
