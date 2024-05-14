@@ -87,7 +87,7 @@ public class PlantsController : ControllerBase
         }
     }
        
-    [HttpGet("plants/{id}/ph")]
+    [HttpGet("/ph")]
     public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync()
     {
         try
