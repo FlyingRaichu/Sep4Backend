@@ -90,7 +90,7 @@ public class PlantDataLogic : IPlantDataLogic
     public async Task<PlantPhDto> CheckPhLevelAsync(int id)
     {
         IConnectionController controller = new ConnectionController();
-        string response = await controller.SendRequestToArduino("PARAMS");
+        string response = await controller.SendRequestToArduinoAsync("PARAMS");
 
         PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
         if (plant == null)
@@ -113,28 +113,27 @@ public class PlantDataLogic : IPlantDataLogic
 
     public async Task<DisplayPlantECDto?> CheckECAsync(int id)
     {
-        var jsonString =
-            await _connectionController
-                .SendRequestToArduinoAsync("PLACEHOLDER"); //TODO change this to the actual call's parameters
-
-        //Deserialize the JSON string into a PlantData object
-        var plantData = JsonSerializer.Deserialize<PlantData>(jsonString,
-            new JsonSerializerOptions 
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+        var jsonString = 
+            await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        
+        
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
-        var status = plantData?.WaterEC switch
+        var status = plantData?.Readings.FirstOrDefault()?.WaterConductivity switch
         {
-            // Similar to temperature, define thresholds for EC levels
-            // Placeholder thresholds
-            >= 100 and <= 200 => "Norm",
-            > 200 => "Dang",
-            _ => "Warn"
+            //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
+            >= 50 and <= 75 => "Warn",
+            > 75 => "Dang",
+            _ => "Norm"
         };
 
-        return new DisplayPlantECDto(plantData!.WaterEC, status);
+        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
+        return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.WaterConductivity, status);
     }
 
 }

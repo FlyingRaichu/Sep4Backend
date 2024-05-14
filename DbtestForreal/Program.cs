@@ -43,7 +43,7 @@ namespace DbtestForreal
                 var retrievedPlantData = dbContext.PlantData.FirstOrDefault();
                 if (retrievedPlantData != null)
                 {
-                    Console.WriteLine($"Retrieved Plant Data: Id={retrievedPlantData.Id}, Name={retrievedPlantData.PlantName}, Water Temperature={retrievedPlantData.WaterTemperature}, pH Level={retrievedPlantData.PhLevel}");
+                    Console.WriteLine($"Retrieved Plant Data: Id={retrievedPlantData.Id}, Name={retrievedPlantData.PlantName}, Water Temperature={retrievedPlantData.WaterTemperature}, pH Level={retrievedPlantData.PhLevel}, Water Conductivity={retrievedPlantData.WaterEC}");
                 }
                 else
                 {
