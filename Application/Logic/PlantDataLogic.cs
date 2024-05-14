@@ -114,7 +114,39 @@ public class PlantDataLogic : IPlantDataLogic
         DisplayPlantPhDto dto = new DisplayPlantPhDto()
         {
             Status = status,
-            PhLevel = (float) plantData?.Readings?.FirstOrDefault()?.WaterPhLevel!
+              PhLevel = (float) plantData?.Readings?.FirstOrDefault()?.WaterPhLevel!
+        };
+        return dto;
+    }
+    public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
+    {
+        var response = @"
+        {
+            ""name"" : ""monitoring_results"",
+            ""readings"": [{
+                ""water_conductivity"": 2622,
+                ""water_temperature"" : 23.5,
+                ""water_ph"" : 6.4,
+                ""water_flow"" : 3.3,
+            }]
+        }";
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, 
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        
+        var status = plantData?.Readings?.FirstOrDefault()?.WaterFlow switch
+        {
+            //Placeholder
+            >= (float) 6.8 or <= (float) 6.2 => "Warn",
+            _ => "Norm"
+        };
+        DisplayPlantWaterFlowDto dto = new DisplayPlantWaterFlowDto()
+        {
+            Status = status,
+            WaterFlow = (float) plantData?.Readings?.FirstOrDefault()?.WaterFlow!
         };
         return dto;
     }

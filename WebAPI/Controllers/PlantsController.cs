@@ -68,4 +68,19 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    [HttpGet("plant/flow")]
+    public async Task<ActionResult<DisplayPlantWaterFlowDto>> CheckWaterFlowAsync()
+    {
+        try
+        {
+            DisplayPlantWaterFlowDto response = await _logic.CheckWaterFlowAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
