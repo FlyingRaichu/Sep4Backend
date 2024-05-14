@@ -43,14 +43,22 @@ public class PlantsController : ControllerBase
         try
         {
             var response = await _logic.CheckTemperatureAsync(id);
-            Console.WriteLine($"Water temp is: {response.WaterTemperature}" );
-    
-    [HttpGet("plants/{id}/ph")]
-    public async Task<ActionResult<PlantPhDto>> CheckPhLevelAsync(int id)
+            Console.WriteLine($"Water temp is: {response.WaterTemperature}");
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("plant/ph")]
+    public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync()
     {
         try
         {
-            PlantPhDto response = await _logic.CheckPhLevelAsync(id);
+            DisplayPlantPhDto response = await _logic.CheckPhLevelAsync();
             return Ok(response);
         }
         catch (Exception e)

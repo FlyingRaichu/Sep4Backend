@@ -47,8 +47,6 @@ AuthorizationPolicies.AddPolicies(builder.Services);
 
 var app = builder.Build();
 
-var connectionController = app.Services.GetRequiredService<IConnectionController>();
-await connectionController.EstablishConnection(23); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
