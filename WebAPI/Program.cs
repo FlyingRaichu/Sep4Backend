@@ -3,6 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Logic;
 using Application.LogicInterfaces;
+using Application.ServiceInterfaces;
+using Application.Services;
 using Auth;
 using Auth.ServiceInterfaces;
 using Auth.Services;
@@ -21,6 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
 builder.WebHost.UseKestrel(options =>
 {
     options.Listen(IPAddress.Any, 5021);

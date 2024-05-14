@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Application.LogicInterfaces;
+using Application.ServiceInterfaces;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
@@ -14,10 +15,13 @@ namespace Application.Logic;
 public class PlantDataLogic : IPlantDataLogic
 {
     private readonly IConnectionController _connectionController;
+    private readonly IThresholdConfigurationService _configurationService;
 
-    public PlantDataLogic(IConnectionController connectionController)
+    public PlantDataLogic(IConnectionController connectionController,
+        IThresholdConfigurationService configurationService)
     {
         _connectionController = connectionController;
+        _configurationService = configurationService;
     }
 
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
@@ -47,9 +51,9 @@ public class PlantDataLogic : IPlantDataLogic
 
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
     {
-    var jsonString =
-        await _connectionController
-            .SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        var jsonString =
+            await _connectionController
+                .SendRequestToArduinoAsync(ApiParameters.DataRequest);
 //     var jsonString = @"
 // {
 //     ""name"" : ""monitoring_results"",
@@ -60,25 +64,36 @@ public class PlantDataLogic : IPlantDataLogic
 // }";
 
 
-
-    //Deserialize the JSON string into a MonitoringResultDto object
-    var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
+        //Deserialize the JSON string into a MonitoringResultDto object
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
             new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            {
+                PropertyNameCaseInsensitive = true
+            });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
-    var status = plantData?.Readings.FirstOrDefault()?.WaterTemperature switch
+        //Calling the object created from the JSON config
+        var configuration = await _configurationService.GetConfigurationAsync();
+
+        var status = DetermineTemperatureStatus(plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
+
+        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
+        return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
+    }
+
+
+    private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)
     {
-        //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
-        >= 50 and <= 75 => "Warn",
-        > 75 => "Dang",
-        _ => "Norm"
-    };
+        var isWarningRange =
+            (waterTemperature <= config.WarningTemperatureMin && waterTemperature > config.MinTemperature) ||
+            (waterTemperature >= config.WarningTemperatureMax && waterTemperature < config.MaxTemperature);
+        var isDangerRange = waterTemperature >= config.MaxTemperature || waterTemperature <= config.MinTemperature;
 
-    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
-    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
-}
+        if (isDangerRange)
+        {
+            return "Dang";
+        }
 
+        return isWarningRange ? "Warn" : "Norm";
+    }
 }
