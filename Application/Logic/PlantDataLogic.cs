@@ -84,33 +84,33 @@ public class PlantDataLogic : IPlantDataLogic
 
         var status = DetermineTemperatureStatus(plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
 
-        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
-        return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
-    }
-
-    public async Task<PlantPhDto> CheckPhLevelAsync(int id)
+    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
+    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
+}
+    
+    public async Task<DisplayPlantPhDto> GetPhLevelAsync()
     {
-        IConnectionController controller = new ConnectionController();
-        string response = await controller.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        PlantData? plant = JsonSerializer.Deserialize<PlantData>(response);
-        if (plant == null)
+        // For Testing: Remove Comments from json, and comment out "string response = ..."
+        
+        /* var response = @"
         {
-            throw new Exception("Plant does not exist");
-        }
-
-        PlantPhDto dto = new PlantPhDto()
+            ""name"" : ""monitoring_results"",
+            ""readings"": [{
+                ""water_conductivity"": 2622,
+                ""water_temperature"" : 23.5,
+                ""water_ph"" : 6.4
+            }]
+        }"; */
+        
+        string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
         {
-            PlantId = plant.Id,
-            PhLevel = plant.PhLevel
-        };
-
-        if (dto.PhLevel >= 6.2 || dto.PhLevel <= 6.8)
-        {
-            dto.IsOkay = true;
-        }
-
-        return dto;
+            PropertyNameCaseInsensitive = true
+        });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        float? phLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel;
+        string status = phLevel >= 6.8f || phLevel <= 6.2f ? "Warn" : "Norm";
+        return new DisplayPlantPhDto() { Status = status, PhLevel = phLevel };
     }
 
     public async Task<DisplayPlantECDto?> CheckECAsync(int id)

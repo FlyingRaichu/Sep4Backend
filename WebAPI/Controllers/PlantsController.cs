@@ -2,6 +2,7 @@
 using Application.ServiceInterfaces;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Sep4Backend.Controllers;
@@ -86,11 +87,11 @@ public class PlantsController : ControllerBase
     }
        
     [HttpGet("plants/{id}/ph")]
-    public async Task<ActionResult<PlantPhDto>> CheckPhLevelAsync(int id)
+    public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync(int id)
     {
         try
         {
-            PlantPhDto response = await _logic.CheckPhLevelAsync(id);
+            DisplayPlantPhDto response = await _logic.GetPhLevelAsync();
             return Ok(response);
         }
         catch (Exception e)
