@@ -72,7 +72,7 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [HttpPut("thresholds")]
     public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdConfigurationDto configurationDto)
     {
         try
