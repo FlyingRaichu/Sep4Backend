@@ -22,11 +22,12 @@ public class PlantsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
         [FromQuery] float? waterTemperature,
-        [FromQuery] float? phLevel)
+        [FromQuery] float? phLevel,
+        [FromQuery] float? waterFlow)
     {
         try
         {
-            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel);
+            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel, waterFlow);
             var plants = await _logic.GetAsync(searchDto);
             return Ok(plants);
         }

@@ -31,6 +31,11 @@ public class PlantDataLogic : IPlantDataLogic
             query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
         }
 
+        if (searchDto.WaterFlow != null)
+        {
+            query = query.Where(plant => plant.WaterFlow.Equals(searchDto.WaterFlow));
+        }
+
         return await query.ToListAsync();
     }
 }
