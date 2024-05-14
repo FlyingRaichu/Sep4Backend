@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "Auth\Auth.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbtestForreal", "DbtestForreal\DbtestForreal.csproj", "{ED71819E-BD10-4536-A2DF-3A78C668DFC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTServer", "IoTServer\IoTServer.csproj", "{CBACF7CB-903F-4F44-971C-BA28E3285E8E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +42,5 @@ Global
 		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED71819E-BD10-4536-A2DF-3A78C668DFC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBACF7CB-903F-4F44-971C-BA28E3285E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBACF7CB-903F-4F44-971C-BA28E3285E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBACF7CB-903F-4F44-971C-BA28E3285E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBACF7CB-903F-4F44-971C-BA28E3285E8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -17,6 +17,7 @@
       <ProjectReference Include="..\Application\Application.csproj" />
       <ProjectReference Include="..\Auth\Auth.csproj" />
       <ProjectReference Include="..\DatabaseInterfacing\DatabaseInterfacing.csproj" />
+      <ProjectReference Include="..\IoTInterfacing\IoTInterfacing.csproj" />
     </ItemGroup>
 
 </Project>

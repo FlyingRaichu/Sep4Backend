@@ -4,6 +4,6 @@ namespace IoTInterfacing.Interfaces;
 
 public interface IConnectionController
 {
-    Task EstablishConnection(int port);
-    Task<string> SendRequestToArduino(string apiParameters);
+    Task EstablishConnectionAsync(int port);
+    Task<string> SendRequestToArduinoAsync(string apiParameters);
 }
