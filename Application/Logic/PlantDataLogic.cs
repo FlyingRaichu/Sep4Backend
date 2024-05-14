@@ -44,6 +44,11 @@ public class PlantDataLogic : IPlantDataLogic
             query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
         }
 
+        if (searchDto.WaterEC != null)
+        {
+            query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
+        }
+
         return await query.ToListAsync();
     }
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
@@ -105,4 +110,31 @@ public class PlantDataLogic : IPlantDataLogic
         }
         return dto;
     }
+
+    public async Task<DisplayPlantECDto?> CheckECAsync(int id)
+    {
+        var jsonString =
+            await _connectionController
+                .SendRequestToArduinoAsync("PLACEHOLDER"); //TODO change this to the actual call's parameters
+
+        //Deserialize the JSON string into a PlantData object
+        var plantData = JsonSerializer.Deserialize<PlantData>(jsonString,
+            new JsonSerializerOptions 
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var status = plantData?.WaterEC switch
+        {
+            // Similar to temperature, define thresholds for EC levels
+            // Placeholder thresholds
+            >= 100 and <= 200 => "Norm",
+            > 200 => "Dang",
+            _ => "Warn"
+        };
+
+        return new DisplayPlantECDto(plantData!.WaterEC, status);
+    }
+
 }

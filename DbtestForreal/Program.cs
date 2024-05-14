@@ -22,7 +22,8 @@ namespace DbtestForreal
                 {
                     PlantName = "Sample Plant",
                     WaterTemperature = 25.5f,
-                    PhLevel = 7.2f
+                    PhLevel = 7.2f,
+                    WaterEC = 1.5f
                 };
                 dbContext.PlantData.Add(plantData);
 
