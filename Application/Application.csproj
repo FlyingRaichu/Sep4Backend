@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DatabaseInterfacing\DatabaseInterfacing.csproj" />
+      <ProjectReference Include="..\IoTInterfacing\IoTInterfacing.csproj" />
     </ItemGroup>
 
 </Project>
