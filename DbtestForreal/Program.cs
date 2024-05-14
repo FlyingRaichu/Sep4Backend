@@ -23,7 +23,7 @@ namespace DbtestForreal
                     PlantName = "Sample Plant",
                     WaterTemperature = 25.5f,
                     PhLevel = 7.2f,
-                    WaterEC = 1.5f
+                    WaterFlow = 2.2f
                 };
                 dbContext.PlantData.Add(plantData);
 
@@ -43,7 +43,7 @@ namespace DbtestForreal
                 var retrievedPlantData = dbContext.PlantData.FirstOrDefault();
                 if (retrievedPlantData != null)
                 {
-                    Console.WriteLine($"Retrieved Plant Data: Id={retrievedPlantData.Id}, Name={retrievedPlantData.PlantName}, Water Temperature={retrievedPlantData.WaterTemperature}, pH Level={retrievedPlantData.PhLevel}, Water Conductivity={retrievedPlantData.WaterEC}");
+                    Console.WriteLine($"Retrieved Plant Data: Id={retrievedPlantData.Id}, Name={retrievedPlantData.PlantName}, Water Temperature={retrievedPlantData.WaterTemperature}, pH Level={retrievedPlantData.PhLevel}, Water Flow={retrievedPlantData.WaterFlow}");
                 }
                 else
                 {

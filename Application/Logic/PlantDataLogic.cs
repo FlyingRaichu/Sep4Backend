@@ -48,6 +48,11 @@ public class PlantDataLogic : IPlantDataLogic
             query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
         }
 
+        if (searchDto.WaterFlow != null)
+        {
+            query = query.Where(plant => plant.WaterFlow.Equals(searchDto.WaterFlow));
+        }
+
         if (searchDto.WaterEC != null)
         {
             query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
@@ -55,7 +60,6 @@ public class PlantDataLogic : IPlantDataLogic
 
         return await query.ToListAsync();
     }
-
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
     {
         var jsonString =
@@ -136,6 +140,39 @@ public class PlantDataLogic : IPlantDataLogic
 
         Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
         return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.WaterConductivity, status);
+    }
+    
+    public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
+    {
+        var response = @"
+        {
+            ""name"" : ""monitoring_results"",
+            ""readings"": [{
+                ""water_conductivity"": 2622,
+                ""water_temperature"" : 23.5,
+                ""water_ph"" : 6.4,
+                ""water_flow"" : 3.3,
+            }]
+        }";
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, 
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        
+        var status = plantData?.Readings?.FirstOrDefault()?.WaterFlow switch
+        {
+            //Placeholder
+            >= (float) 6.8 or <= (float) 6.2 => "Warn",
+            _ => "Norm"
+        };
+        DisplayPlantWaterFlowDto dto = new DisplayPlantWaterFlowDto()
+        {
+            Status = status,
+            WaterFlow = (float) plantData?.Readings?.FirstOrDefault()?.WaterFlow!
+        };
+        return dto;
     }
 
     private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)

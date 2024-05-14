@@ -21,4 +21,7 @@ public class PlantData
     
     [Column("water_ec")]
     public float WaterEC { get; set; }
+    
+    [Column("water_flow")]
+    public float WaterFlow { get; set; }
 }
