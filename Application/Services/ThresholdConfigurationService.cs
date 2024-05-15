@@ -67,18 +67,18 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_conductivity",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_temperature",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
@@ -91,42 +91,42 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_flow",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_level",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "air_temperature",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "air_humidity",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "air_co2",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         return dto;
     }
