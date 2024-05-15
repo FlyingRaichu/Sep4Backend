@@ -12,33 +12,27 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
     public ThresholdConfigurationService()
     {
         _currentConfig = LoadConfiguration();
+        SaveConfigurationAsync(_currentConfig);
     }
 
     public Task<ThresholdConfigurationDto> GetConfigurationAsync()
     {
         var configDto = new ThresholdConfigurationDto
         {
-            MinTemperature = _currentConfig.MinTemperature,
-            WarningTemperatureMin = _currentConfig.WarningTemperatureMin,
-            WarningTemperatureMax = _currentConfig.WarningTemperatureMax,
-            MaxTemperature = _currentConfig.MaxTemperature
+            Thresholds = _currentConfig.Thresholds
         };
         return Task.FromResult(configDto);
     }
 
     public async Task UpdateConfigurationAsync(ThresholdConfigurationDto configDto)
     {
-        _currentConfig.MinTemperature = configDto.MinTemperature;
-        _currentConfig.WarningTemperatureMin = configDto.WarningTemperatureMin;
-        _currentConfig.WarningTemperatureMax = configDto.WarningTemperatureMax;
-        _currentConfig.MaxTemperature = configDto.MaxTemperature;
-        
+        _currentConfig.Thresholds = configDto.Thresholds;
         await SaveConfigurationAsync(_currentConfig);
     }
 
     private ThresholdConfigurationDto LoadConfiguration()
     {
-        if (!File.Exists(ConfigFilePath)) return new ThresholdConfigurationDto();
+        if (!File.Exists(ConfigFilePath)) return LoadGeneralConfiguration();
         
         var json = File.ReadAllText(ConfigFilePath);
         return JsonSerializer.Deserialize<ThresholdConfigurationDto>(json) ?? throw new Exception("File is empty. Save some data before attempting to load.");
@@ -59,6 +53,45 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         var tempFilePath = Path.GetTempFileName();
         await File.WriteAllTextAsync(tempFilePath, json);
         File.Move(tempFilePath, ConfigFilePath, true);
+        Console.WriteLine("File saved!");
+    }
+
+    private ThresholdConfigurationDto LoadGeneralConfiguration()
+    {
+        ThresholdConfigurationDto dto = new ThresholdConfigurationDto();
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "water_conductivity",
+            PerfectMin = 6,
+            PerfectMax = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "water_temperature",
+            PerfectMin = 6,
+            PerfectMax = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "water_ph",
+            PerfectMin = 6,
+            PerfectMax = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "water_flow",
+            PerfectMin = 6,
+            PerfectMax = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        return dto;
     }
 
 }

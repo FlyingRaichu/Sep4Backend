@@ -177,10 +177,12 @@ public class PlantDataLogic : IPlantDataLogic
 
     private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)
     {
+        var thresholdDto = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals("water_temperature"));
+        if (thresholdDto == null) throw new Exception("Threshold does not exist!");
         var isWarningRange =
-            (waterTemperature <= config.WarningTemperatureMin && waterTemperature > config.MinTemperature) ||
-            (waterTemperature >= config.WarningTemperatureMax && waterTemperature < config.MaxTemperature);
-        var isDangerRange = waterTemperature >= config.MaxTemperature || waterTemperature <= config.MinTemperature;
+            (waterTemperature <= thresholdDto.WarningMin && waterTemperature > thresholdDto.PerfectMin) ||
+            (waterTemperature >= thresholdDto.WarningMax && waterTemperature < thresholdDto.PerfectMax);
+        var isDangerRange = waterTemperature >= thresholdDto.PerfectMax || waterTemperature <= thresholdDto.PerfectMin;
 
         if (isDangerRange)
         {
