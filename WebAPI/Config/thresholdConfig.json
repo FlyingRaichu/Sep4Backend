@@ -9,10 +9,10 @@
     },
     {
       "type": "water_temperature",
-      "perfect-min": 6,
+      "perfect-min": 4,
       "warning-min": 6.2,
       "warning-max": 6.8,
-      "perfect-max": 7
+      "perfect-max": 10
     },
     {
       "type": "water_ph",

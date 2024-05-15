@@ -24,9 +24,14 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         return Task.FromResult(configDto);
     }
 
-    public async Task UpdateConfigurationAsync(ThresholdConfigurationDto configDto)
+    public async Task UpdateConfigurationAsync(ThresholdDto dto)
     {
-        _currentConfig.Thresholds = configDto.Thresholds;
+        var threshold = _currentConfig.Thresholds.FirstOrDefault(d => dto.Type == d.Type);
+        if (threshold == null) throw new Exception("No threshold with such type!");
+        threshold.PerfectMin = dto.PerfectMin;
+        threshold.PerfectMax = dto.PerfectMax;
+        threshold.WarningMin = dto.WarningMin;
+        threshold.WarningMax = dto.WarningMax;
         await SaveConfigurationAsync(_currentConfig);
     }
 
