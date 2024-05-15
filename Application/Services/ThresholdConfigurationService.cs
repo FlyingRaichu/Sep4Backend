@@ -96,6 +96,38 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
             WarningMin = 6.2,
             WarningMax = 6.8
         });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "water_level",
+            Min = 6,
+            Max = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "air_temperature",
+            Min = 6,
+            Max = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "air_humidity",
+            Min = 6,
+            Max = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "air_co2",
+            Min = 6,
+            Max = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
         return dto;
     }
 
