@@ -1,0 +1,32 @@
+{
+  "thresholds": [
+    {
+      "type": "water_conductivity",
+      "min": 6,
+      "warning-min": 6.2,
+      "warning-max": 6.8,
+      "max": 7
+    },
+    {
+      "type": "water_temperature",
+      "min": 6,
+      "warning-min": 6.2,
+      "warning-max": 6.8,
+      "max": 7
+    },
+    {
+      "type": "water_ph",
+      "min": 6,
+      "warning-min": 6.2,
+      "warning-max": 6.8,
+      "max": 7
+    },
+    {
+      "type": "water_flow",
+      "min": 6,
+      "warning-min": 6.2,
+      "warning-max": 6.8,
+      "max": 7
+    }
+  ]
+}

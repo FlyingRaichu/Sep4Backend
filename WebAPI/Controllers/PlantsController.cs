@@ -72,12 +72,12 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdConfigurationDto configurationDto)
+    [HttpPatch("thresholds")]
+    public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdDto dto)
     {
         try
         {
-            await _thresholdConfigurationService.UpdateConfigurationAsync(configurationDto);
+            await _thresholdConfigurationService.UpdateConfigurationAsync(dto);
             return Ok();
         }
         catch (Exception e)
