@@ -18,6 +18,16 @@ public class PlantDataLogic : IPlantDataLogic
 {
     private readonly IConnectionController _connectionController;
     private readonly IThresholdConfigurationService _configurationService;
+    private static string TEST = @"
+        {
+            ""name"" : ""monitoring_results"",
+            ""readings"": [{
+                ""water_conductivity"": 2622,
+                ""water_temperature"" : 23.5,
+                ""water_ph"" : 7.1,
+                ""water_flow"" : 6.2
+            }]
+        }";
 
     public PlantDataLogic(IConnectionController connectionController,
         IThresholdConfigurationService configurationService)
@@ -61,20 +71,14 @@ public class PlantDataLogic : IPlantDataLogic
         return await query.ToListAsync();
     }
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
-    {
+    { 
         var jsonString =
             await _connectionController
                 .SendRequestToArduinoAsync(ApiParameters.DataRequest);
-//     var jsonString = @"
-// {
-//     ""name"" : ""monitoring_results"",
-//     ""readings"": [{
-//         ""water_conductivity"": 2622,
-//         ""water_temperature"" : 23.5
-//     }]
-// }";
-
-
+        
+        //For testing remove // from line bellow 
+        //var jsonString = TEST;
+        
         //Deserialize the JSON string into a MonitoringResultDto object
         var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
             new JsonSerializerOptions
@@ -86,35 +90,27 @@ public class PlantDataLogic : IPlantDataLogic
         //Calling the object created from the JSON config
         var configuration = await _configurationService.GetConfigurationAsync();
 
-        var status = DetermineTemperatureStatus(plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
+        var status = DetermineStatus("water_temperature",plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
 
-    Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterTemperature}");
-    return new DisplayPlantTemperatureDto(plantData!.Readings.FirstOrDefault()?.WaterTemperature, status);
-}
+        Console.WriteLine($"Plant water temp is: {plantData.Readings.FirstOrDefault()?.WaterTemperature}");
+        return new DisplayPlantTemperatureDto(plantData.Readings.FirstOrDefault()?.WaterTemperature, status);
+    }
     
     public async Task<DisplayPlantPhDto> GetPhLevelAsync()
     {
         // For Testing: Remove Comments from json, and comment out "string response = ..."
+
+        var response = TEST;
         
-        /* var response = @"
-        {
-            ""name"" : ""monitoring_results"",
-            ""readings"": [{
-                ""water_conductivity"": 2622,
-                ""water_temperature"" : 23.5,
-                ""water_ph"" : 6.4
-            }]
-        }"; */
-        
-        string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        //string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
         var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-        float? phLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel;
-        string status = phLevel >= 6.8f || phLevel <= 6.2f ? "Warn" : "Norm";
-        return new DisplayPlantPhDto() { Status = status, PhLevel = phLevel };
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("water_ph",plantData.Readings.FirstOrDefault()?.WaterPhLevel, configuration);
+        return new DisplayPlantPhDto() { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel };
     }
 
     public async Task<DisplayPlantECDto?> CheckECAsync(int id)
@@ -122,6 +118,7 @@ public class PlantDataLogic : IPlantDataLogic
         var jsonString =
             await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
 
+        //var jsonString = TEST;
 
         var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
             new JsonSerializerOptions
@@ -130,13 +127,8 @@ public class PlantDataLogic : IPlantDataLogic
             });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
-        var status = plantData?.Readings.FirstOrDefault()?.WaterConductivity switch
-        {
-            //The thresholds are placeholders, we need to figure out how to feed new placeholders up in this
-            >= 50 and <= 75 => "Warn",
-            > 75 => "Dang",
-            _ => "Norm"
-        };
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("water_conductivity", plantData.Readings.FirstOrDefault()?.WaterConductivity, configuration);
 
         Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
         return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.WaterConductivity, status);
@@ -144,16 +136,9 @@ public class PlantDataLogic : IPlantDataLogic
     
     public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
     {
-        var response = @"
-        {
-            ""name"" : ""monitoring_results"",
-            ""readings"": [{
-                ""water_conductivity"": 2622,
-                ""water_temperature"" : 23.5,
-                ""water_ph"" : 6.4,
-                ""water_flow"" : 3.3,
-            }]
-        }";
+        var response = TEST;
+        //var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+
         var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, 
             new JsonSerializerOptions
             {
@@ -161,12 +146,9 @@ public class PlantDataLogic : IPlantDataLogic
             });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
         
-        var status = plantData?.Readings?.FirstOrDefault()?.WaterFlow switch
-        {
-            //Placeholder
-            >= (float) 6.8 or <= (float) 6.2 => "Warn",
-            _ => "Norm"
-        };
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("water_flow", plantData.Readings.FirstOrDefault()?.WaterFlow, configuration);
+
         DisplayPlantWaterFlowDto dto = new DisplayPlantWaterFlowDto()
         {
             Status = status,
@@ -175,20 +157,18 @@ public class PlantDataLogic : IPlantDataLogic
         return dto;
     }
 
-    private static string DetermineTemperatureStatus(float? waterTemperature, ThresholdConfigurationDto config)
+    private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
     {
-        var thresholdDto = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals("water_temperature"));
-        if (thresholdDto == null) throw new Exception("Threshold does not exist!");
+        var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
+        if (threshold == null) throw new Exception("Threshold does not exist!");
+        
         var isWarningRange =
-            (waterTemperature <= thresholdDto.WarningMin && waterTemperature > thresholdDto.PerfectMin) ||
-            (waterTemperature >= thresholdDto.WarningMax && waterTemperature < thresholdDto.PerfectMax);
-        var isDangerRange = waterTemperature >= thresholdDto.PerfectMax || waterTemperature <= thresholdDto.PerfectMin;
-
-        if (isDangerRange)
-        {
-            return "Dang";
-        }
-
+            (reading <= threshold.WarningMin && reading > threshold.Min) ||
+            (reading >= threshold.WarningMax && reading < threshold.Max);
+        
+        var isDangerRange = reading >= threshold.Max || reading <= threshold.Min;
+        if (isDangerRange) return "Dang";
+        
         return isWarningRange ? "Warn" : "Norm";
     }
 }

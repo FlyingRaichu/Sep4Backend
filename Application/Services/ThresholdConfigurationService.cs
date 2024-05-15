@@ -28,8 +28,8 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
     {
         var threshold = _currentConfig.Thresholds.FirstOrDefault(d => dto.Type == d.Type);
         if (threshold == null) throw new Exception("No threshold with such type!");
-        threshold.PerfectMin = dto.PerfectMin;
-        threshold.PerfectMax = dto.PerfectMax;
+        threshold.Min = dto.Min;
+        threshold.Max = dto.Max;
         threshold.WarningMin = dto.WarningMin;
         threshold.WarningMax = dto.WarningMax;
         await SaveConfigurationAsync(_currentConfig);
@@ -67,32 +67,32 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_conductivity",
-            PerfectMin = 6,
-            PerfectMax = 7,
+            Min = 6,
+            Max = 7,
             WarningMin = 6.2,
             WarningMax = 6.8
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_temperature",
-            PerfectMin = 6,
-            PerfectMax = 7,
+            Min = 6,
+            Max = 7,
             WarningMin = 6.2,
             WarningMax = 6.8
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_ph",
-            PerfectMin = 6,
-            PerfectMax = 7,
+            Min = 6,
+            Max = 7,
             WarningMin = 6.2,
             WarningMax = 6.8
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_flow",
-            PerfectMin = 6,
-            PerfectMax = 7,
+            Min = 6,
+            Max = 7,
             WarningMin = 6.2,
             WarningMax = 6.8
         });
