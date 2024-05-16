@@ -13,16 +13,29 @@ namespace DatabaseInterfacing.Domain.DTOs
         [JsonPropertyName("water_ph")]
         public float? WaterPhLevel { get; set; }
 
-        [JsonPropertyName("water_flow")]
+        [JsonPropertyName("water_flow")] 
         public float? WaterFlow { get; set; }
 
+        [JsonPropertyName("water_level")] 
+        public float? WaterLevel { get; set; }
+
+        [JsonPropertyName("air_temperature")] 
+        public float? AirTemperature { get; set; }
+
+        [JsonPropertyName("air_humidity")] 
+        public float? AirHumidity { get; set; }
+
         [JsonConstructor]
-        public ReadingDto(float? waterConductivity, float? waterTemperature, float? waterPhLevel, float? waterFlow)
+        public ReadingDto(float? waterConductivity, float? waterTemperature, float? waterPhLevel, float? waterFlow,
+            float? waterLevel, float? airTemperature, float? airHumidity)
         {
             WaterConductivity = waterConductivity;
             WaterTemperature = waterTemperature;
             WaterPhLevel = waterPhLevel;
             WaterFlow = waterFlow;
+            WaterLevel = waterLevel;
+            AirTemperature = airTemperature;
+            AirHumidity = airHumidity;
         }
     }
 }

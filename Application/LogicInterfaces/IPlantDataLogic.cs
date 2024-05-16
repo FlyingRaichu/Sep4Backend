@@ -7,7 +7,10 @@ public interface IPlantDataLogic
 {
     Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto);
     Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync();
-    Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id);
+    Task<DisplayPlantTemperatureDto?> CheckWaterTemperatureAsync(int id);
     Task<DisplayPlantPhDto> GetPhLevelAsync();
     Task<DisplayPlantECDto?> CheckECAsync(int id);
+    Task<DisplayPlantWaterLevelDto> CheckWaterLevelAsync();
+    Task<DisplayAirTemperatureDto> CheckAirTemperatureAsync();
+    Task<DisplayAirHumidityDto> CheckAirHumidityAsync();
 }

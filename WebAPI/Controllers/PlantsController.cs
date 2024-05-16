@@ -47,7 +47,7 @@ public class PlantsController : ControllerBase
     {
         try
         {
-            var response = await _logic.CheckTemperatureAsync(id);
+            var response = await _logic.CheckWaterTemperatureAsync(id);
             return Ok(response);
         }
         catch (Exception e)
@@ -123,6 +123,51 @@ public class PlantsController : ControllerBase
         try
         {
             DisplayPlantWaterFlowDto response = await _logic.CheckWaterFlowAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("waterLevel")]
+    public async Task<ActionResult<DisplayPlantWaterLevelDto>> CheckWaterLevelAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckWaterLevelAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("airTemperature")]
+    public async Task<ActionResult<DisplayAirTemperatureDto>> CheckAirTemperatureAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckAirTemperatureAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("airHumidity")]
+    public async Task<ActionResult<DisplayAirHumidityDto>> CheckAirHumidityAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckAirHumidityAsync();
             return Ok(response);
         }
         catch (Exception e)
