@@ -30,7 +30,8 @@ public class PlantDataLogic : IPlantDataLogic
                 ""water_level"" : 12,
                 ""air_temperature"" : 20,
                 ""air_humidity"" : 50,
-                ""air_co2"" : 400
+                ""air_co2"" : 400,
+                ""light_level"" : 10000
             }]
         }";
 
@@ -315,6 +316,21 @@ public class PlantDataLogic : IPlantDataLogic
             Status = status,
             DewPoint = dewPoint
         };
+    }
+
+    public async Task<DisplayLightLevelDto> CheckLightLevelAsync()
+    {
+        var response = TEST;
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("light_level", plantData.Readings.FirstOrDefault()?.LightLevel, configuration);
+
+        return new DisplayLightLevelDto(plantData.Readings.FirstOrDefault()?.LightLevel, status);
     }
 
     private static float CalculateVPD(float temperature, float humidity)

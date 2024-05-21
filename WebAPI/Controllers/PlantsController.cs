@@ -221,4 +221,19 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    [HttpGet("lightLevel")]
+    public async Task<ActionResult<DisplayLightLevelDto>> CheckLightLevelsAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckLightLevelAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }

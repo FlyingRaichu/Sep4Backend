@@ -29,9 +29,12 @@ namespace DatabaseInterfacing.Domain.DTOs
         
         public float? AirCO2 { get; set; }
 
+        [JsonPropertyName("light_level")] 
+        public float? LightLevel { get; set; }
+
         [JsonConstructor]
         public ReadingDto(float? waterConductivity, float? waterTemperature, float? waterPhLevel, float? waterFlow,
-            float? waterLevel, float? airTemperature, float? airHumidity, float? airCO2)
+            float? waterLevel, float? airTemperature, float? airHumidity, float? airCO2, float? lightLevel)
         {
             WaterConductivity = waterConductivity;
             WaterTemperature = waterTemperature;
@@ -41,6 +44,7 @@ namespace DatabaseInterfacing.Domain.DTOs
             AirTemperature = airTemperature;
             AirHumidity = airHumidity;
             AirCO2 = airCO2;
+            LightLevel = lightLevel;
         }
     }
 }
