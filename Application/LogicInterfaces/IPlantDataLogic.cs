@@ -16,4 +16,5 @@ public interface IPlantDataLogic
     Task<DisplayAirCO2Dto> CheckAirCO2Async();
     Task<DisplayVPDLevelDto> CheckVPDAsync();
     Task<DisplayDewPointDto> CheckDewPointAsync();
+    Task<DisplayLightLevelDto> CheckLightLevelAsync();
 }
