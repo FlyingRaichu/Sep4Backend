@@ -67,9 +67,36 @@ public class PlantDataLogic : IPlantDataLogic
         {
             query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
         }
-
+        
         return await query.ToListAsync();
     }
+
+    public async Task<MonitoringResultDto> GetAllDataAsync()
+    {
+        var jsonString =
+            await _connectionController
+                .SendRequestToArduinoAsync(ApiParameters.DataRequest);
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+        await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
+        PlantData data = new PlantData()
+        {
+            PlantName = plantData.Name,
+            PhLevel = (float)plantData.Readings.FirstOrDefault()?.WaterPhLevel!,
+            WaterEC = (float)plantData.Readings.FirstOrDefault()?.WaterConductivity!,
+            WaterTemperature = (float)plantData.Readings.FirstOrDefault()?.WaterTemperature!,
+            WaterFlow = (float)plantData.Readings.FirstOrDefault()?.WaterFlow!,
+            DateTime = DateTime.Now
+        };
+        await dbContext.PlantData.AddAsync(data);
+        return plantData;
+    }
+
+
     public async Task<DisplayPlantTemperatureDto?> CheckTemperatureAsync(int id) //Not sure Ids are supposed to be here
     { 
         var jsonString =
