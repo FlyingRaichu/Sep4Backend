@@ -24,10 +24,14 @@ namespace DatabaseInterfacing.Domain.DTOs
 
         [JsonPropertyName("air_humidity")] 
         public float? AirHumidity { get; set; }
+        
+        [JsonPropertyName("air_co2")]
+        
+        public float? AirCO2 { get; set; }
 
         [JsonConstructor]
         public ReadingDto(float? waterConductivity, float? waterTemperature, float? waterPhLevel, float? waterFlow,
-            float? waterLevel, float? airTemperature, float? airHumidity)
+            float? waterLevel, float? airTemperature, float? airHumidity, float? airCO2)
         {
             WaterConductivity = waterConductivity;
             WaterTemperature = waterTemperature;
@@ -36,6 +40,7 @@ namespace DatabaseInterfacing.Domain.DTOs
             WaterLevel = waterLevel;
             AirTemperature = airTemperature;
             AirHumidity = airHumidity;
+            AirCO2 = airCO2;
         }
     }
 }

@@ -176,4 +176,49 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    
+    [HttpGet("airCO2")]
+    public async Task<ActionResult<DisplayAirCO2Dto>> CheckAirCO2Async()
+    {
+        try
+        {
+            var response = await _logic.CheckAirCO2Async();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("vpd")]
+    public async Task<ActionResult<DisplayVPDLevelDto>> CheckVPDAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckVPDAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("dewPoint")]
+    public async Task<ActionResult<DisplayDewPointDto>> CheckDewPointAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckDewPointAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }

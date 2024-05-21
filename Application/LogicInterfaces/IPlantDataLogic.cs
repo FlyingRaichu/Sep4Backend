@@ -13,4 +13,7 @@ public interface IPlantDataLogic
     Task<DisplayPlantWaterLevelDto> CheckWaterLevelAsync();
     Task<DisplayAirTemperatureDto> CheckAirTemperatureAsync();
     Task<DisplayAirHumidityDto> CheckAirHumidityAsync();
+    Task<DisplayAirCO2Dto> CheckAirCO2Async();
+    Task<DisplayVPDLevelDto> CheckVPDAsync();
+    Task<DisplayDewPointDto> CheckDewPointAsync();
 }

@@ -29,7 +29,8 @@ public class PlantDataLogic : IPlantDataLogic
                 ""water_flow"" : 6.2,
                 ""water_level"" : 12,
                 ""air_temperature"" : 20,
-                ""air_humidity"" : 50
+                ""air_humidity"" : 50,
+                ""air_co2"" : 400
             }]
         }";
 
@@ -235,7 +236,104 @@ public class PlantDataLogic : IPlantDataLogic
         
         return dto;
     }
+    
+    public async Task<DisplayAirCO2Dto> CheckAirCO2Async()
+    {
+        var response = TEST;
+        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
 
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("air_co2", plantData.Readings?.FirstOrDefault()?.AirCO2, configuration);
+
+        var dto = new DisplayAirCO2Dto()
+        {
+            Status = status,
+            AirCO2 = plantData.Readings?.FirstOrDefault()?.AirCO2!
+        };
+
+        return dto;
+    }
+    
+    public async Task<DisplayVPDLevelDto> CheckVPDAsync()
+    {
+        var response = TEST;
+        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var airTemperature = plantData.Readings?.FirstOrDefault()?.AirTemperature;
+        var airHumidity = plantData.Readings?.FirstOrDefault()?.AirHumidity;
+
+        if (airTemperature == null || airHumidity == null) throw new Exception("Insufficient data to calculate VPD.");
+
+        var vpd = CalculateVPD(airTemperature.Value, airHumidity.Value);
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("vpd_level", vpd, configuration);
+
+        return new DisplayVPDLevelDto()
+        {
+            Status = status,
+            VPDLevel = vpd
+        };
+    }
+    
+    public async Task<DisplayDewPointDto> CheckDewPointAsync()
+    {
+        var response = TEST;
+        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
+
+        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
+
+        var airTemperature = plantData.Readings?.FirstOrDefault()?.AirTemperature;
+        var airHumidity = plantData.Readings?.FirstOrDefault()?.AirHumidity;
+
+        if (airTemperature == null || airHumidity == null) throw new Exception("Insufficient data to calculate Dew Point.");
+
+        var dewPoint = CalculateDewPoint(airTemperature.Value, airHumidity.Value);
+        var configuration = await _configurationService.GetConfigurationAsync();
+        var status = DetermineStatus("dew_point", dewPoint, configuration);
+
+        return new DisplayDewPointDto()
+        {
+            Status = status,
+            DewPoint = dewPoint
+        };
+    }
+
+    private static float CalculateVPD(float temperature, float humidity)
+    {
+        // Calculation for VPD
+        float es = 0.6108f * (float)Math.Exp((17.27f * temperature) / (temperature + 237.3f));
+        float ea = humidity / 100 * es;
+        return es - ea;
+    }
+    
+    private static float CalculateDewPoint(float temperature, float humidity)
+    {
+        // Calculation for Dew Point
+        double a = 17.27;
+        double b = 237.7;
+        double alpha = ((a * temperature) / (b + temperature)) + Math.Log(humidity / 100.0);
+        return (float)((b * alpha) / (a - alpha));
+    }
+    
     private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
     {
         var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
