@@ -42,6 +42,21 @@ public class PlantsController : ControllerBase
         }
     }
 
+    [HttpGet("/check")]
+    public async Task<ActionResult<MonitoringResultDto>> GetAsync()
+    {
+        try
+        {
+            var response = await _logic.GetAllDataAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpGet("{id:int}/temperature")]
     public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync(int id)
     {

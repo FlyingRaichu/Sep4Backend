@@ -24,4 +24,6 @@ public class PlantData
     
     [Column("water_flow")]
     public float WaterFlow { get; set; }
+    [Column("date-time")]
+    public DateTime DateTime { get; set; }
 }

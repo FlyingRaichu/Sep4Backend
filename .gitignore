@@ -561,3 +561,4 @@ nuget.cache
 #appsettings.json ignores
 DatabaseInterfacing/appsettings.json
 
+WebAPI/Config/thresholdConfig.json
