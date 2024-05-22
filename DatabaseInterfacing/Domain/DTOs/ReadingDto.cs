@@ -4,32 +4,32 @@ namespace DatabaseInterfacing.Domain.DTOs
 {
     public class ReadingDto
     {
-        [JsonPropertyName("water_conductivity")]
+        [JsonPropertyName("waterConductivity")]
         public float? WaterConductivity { get; set; }
 
-        [JsonPropertyName("water_temperature")]
+        [JsonPropertyName("waterTemperature")]
         public float? WaterTemperature { get; set; }
 
-        [JsonPropertyName("water_ph")]
+        [JsonPropertyName("waterPh")]
         public float? WaterPhLevel { get; set; }
 
-        [JsonPropertyName("water_flow")] 
+        [JsonPropertyName("waterFlow")] 
         public float? WaterFlow { get; set; }
 
-        [JsonPropertyName("water_level")] 
+        [JsonPropertyName("waterLevel")] 
         public float? WaterLevel { get; set; }
 
-        [JsonPropertyName("air_temperature")] 
+        [JsonPropertyName("airTemperature")] 
         public float? AirTemperature { get; set; }
 
-        [JsonPropertyName("air_humidity")] 
+        [JsonPropertyName("airHumidity")] 
         public float? AirHumidity { get; set; }
         
-        [JsonPropertyName("air_co2")]
+        [JsonPropertyName("airCo2")]
         
         public float? AirCO2 { get; set; }
 
-        [JsonPropertyName("light_level")] 
+        [JsonPropertyName("lightLevel")] 
         public float? LightLevel { get; set; }
 
         [JsonConstructor]
