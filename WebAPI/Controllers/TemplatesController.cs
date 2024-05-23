@@ -30,4 +30,19 @@ public class TemplatesController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ICollection<Template>>> GetAllAsync()
+    {
+        try
+        {
+            var templates = await _templateLogic.GetAllAsync();
+            return Ok(templates);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
