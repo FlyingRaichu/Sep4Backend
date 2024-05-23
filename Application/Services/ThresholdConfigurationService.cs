@@ -83,10 +83,10 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "water_ph",
-            Min = 6,
-            Max = 7,
-            WarningMin = 6.2,
-            WarningMax = 6.8
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
         });
         dto.Thresholds.Add(new ThresholdDto()
         {

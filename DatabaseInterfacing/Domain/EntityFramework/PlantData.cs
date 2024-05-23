@@ -15,7 +15,7 @@ public class PlantData
 
     [Column("water_temperature")]
     public float WaterTemperature { get; set; }
-
+    
     [Column("ph_level")]
     public float PhLevel { get; set; }
     
