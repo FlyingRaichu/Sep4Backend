@@ -29,9 +29,9 @@ namespace Application.Services
                 throw new ArgumentException("deltaTime must be greater than zero", nameof(deltaTimeInSeconds));
             }
 
-            if (currentFlowRate < 0)
+            if (currentFlowRate.Equals(-90000))
             {
-                throw new ArgumentException("Current flow rate is < 0. Check if you're receiving the proper readings from the Arduino.");
+                throw new ArgumentException("Current flow rate is -90 000. Check if you're receiving the proper readings from the Arduino at PlantDataLogic.");
             }
 
             // Error calculation

@@ -198,7 +198,7 @@ public class PlantDataLogic : IPlantDataLogic
         
         var perfectThreshold = (waterFlowValues.WarningMin + waterFlowValues.WarningMax) / 2;
         
-        //TODO Test this logic
+        //TODO Test this
         //PID and output logic
         var pid = new PidService(0.1, 0.1, 0.1, perfectThreshold);
 
