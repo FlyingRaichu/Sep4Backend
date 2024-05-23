@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Application.LogicInterfaces;
 using Application.ServiceInterfaces;
+using Application.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
@@ -18,6 +19,7 @@ public class PlantDataLogic : IPlantDataLogic
 {
     private readonly IConnectionController _connectionController;
     private readonly IThresholdConfigurationService _configurationService;
+    private readonly IOutputService _outputService;
 
     private static string TEST = @"
         {
@@ -40,6 +42,7 @@ public class PlantDataLogic : IPlantDataLogic
     {
         _connectionController = connectionController;
         _configurationService = configurationService;
+        _outputService = new OutputService(_connectionController);
     }
 
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
@@ -182,13 +185,25 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("water_flow", plantData.Readings.FirstOrDefault()?.WaterFlow, configuration);
+        var reading = plantData.Readings.First().WaterFlow ?? -900000;
+        var status = DetermineStatus("waterFlow", reading, configuration);
 
-        DisplayPlantWaterFlowDto dto = new DisplayPlantWaterFlowDto()
+        var dto = new DisplayPlantWaterFlowDto()
         {
             Status = status,
             WaterFlow = (float)plantData?.Readings?.FirstOrDefault()?.WaterFlow!
         };
+        
+        var waterFlowValues = configuration.Thresholds.FirstOrDefault(type => type.Type.Equals("waterFlow"))!;
+        
+        var perfectThreshold = (waterFlowValues.WarningMin + waterFlowValues.WarningMax) / 2;
+        
+        //TODO Test this logic
+        //PID and output logic
+        var pid = new PidService(0.1, 0.1, 0.1, perfectThreshold);
+
+        await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading, 5));
+        
         return dto;
     }
 
