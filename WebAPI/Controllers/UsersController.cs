@@ -34,8 +34,7 @@ public class UsersController : ControllerBase
                 throw new Exception("Could not find settings for Subject in appsettings.json")),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Name, user.UserName)
         };
         return claims.ToList();
     }

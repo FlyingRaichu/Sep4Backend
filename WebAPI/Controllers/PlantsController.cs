@@ -42,7 +42,7 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpGet("/check")]
+    [HttpGet("check")]
     public async Task<ActionResult<MonitoringResultDto>> GetAsync()
     {
         try
@@ -57,12 +57,12 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpGet("{id:int}/temperature")]
-    public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync(int id)
+    [HttpGet("temperature")]
+    public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync()
     {
         try
         {
-            var response = await _logic.CheckWaterTemperatureAsync(id);
+            var response = await _logic.CheckWaterTemperatureAsync();
             return Ok(response);
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ public class PlantsController : ControllerBase
         }
     }
        
-    [HttpGet("/ph")]
+    [HttpGet("ph")]
     public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync()
     {
         try
@@ -117,12 +117,12 @@ public class PlantsController : ControllerBase
         }
     }
     
-    [HttpGet("{id:int}/waterEC")]
-    public async Task<ActionResult<string>> GetPlantEC(int id)
+    [HttpGet("waterEC")]
+    public async Task<ActionResult<string>> GetPlantEC()
     {
         try
         {
-            var response = await _logic.CheckECAsync(id);
+            var response = await _logic.CheckECAsync();
             return Ok(response);
         }
         catch (Exception e)
@@ -132,7 +132,7 @@ public class PlantsController : ControllerBase
         }
     }
     
-    [HttpGet("plant/flow")]
+    [HttpGet("flow")]
     public async Task<ActionResult<DisplayPlantWaterFlowDto>> CheckWaterFlowAsync()
     {
         try

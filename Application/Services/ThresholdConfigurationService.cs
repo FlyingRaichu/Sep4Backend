@@ -66,7 +66,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         ThresholdConfigurationDto dto = new ThresholdConfigurationDto();
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "water_conductivity",
+            Type = "waterConductivity",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -74,7 +74,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "water_temperature",
+            Type = "waterTemperature",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -82,7 +82,15 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "water_ph",
+            Type = "waterPh",
+            Min = 6,
+            Max = 7,
+            WarningMin = 6.2,
+            WarningMax = 6.8
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "waterFlow",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -90,7 +98,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "water_flow",
+            Type = "waterLevel",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -98,7 +106,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "water_level",
+            Type = "airTemperature",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -106,7 +114,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "air_temperature",
+            Type = "airHumidity",
             Min = 0,
             Max = 0,
             WarningMin = 0,
@@ -114,15 +122,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         });
         dto.Thresholds.Add(new ThresholdDto()
         {
-            Type = "air_humidity",
-            Min = 0,
-            Max = 0,
-            WarningMin = 0,
-            WarningMax = 0
-        });
-        dto.Thresholds.Add(new ThresholdDto()
-        {
-            Type = "air_co2",
+            Type = "airCo2",
             Min = 0,
             Max = 0,
             WarningMin = 0,
