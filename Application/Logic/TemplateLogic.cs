@@ -23,8 +23,9 @@ public class TemplateLogic : ITemplateLogic
                 Max = t.Max
             }).ToList()
         };
-        dbContext.Templates.Add(template); 
-        await dbContext.SaveChangesAsync(); 
+        Console.WriteLine(template);
+        //dbContext.Templates.Add(template); 
+        //await dbContext.SaveChangesAsync(); 
         return template;
     }
 }
