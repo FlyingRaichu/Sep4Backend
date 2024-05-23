@@ -10,6 +10,7 @@ using Auth.ServiceInterfaces;
 using Auth.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
+using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Implementations;
 using IoTInterfacing.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,6 +26,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.Services.AddScoped<ITemplateLogic, TemplateLogic>();
 builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
 builder.WebHost.UseKestrel(options =>
 {
