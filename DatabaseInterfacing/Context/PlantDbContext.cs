@@ -11,4 +11,6 @@ public class PlantDbContext : DbContext
     
     public DbSet<PlantData> PlantData { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Template> Templates { get; set; }
+    public DbSet<Parameter> Parameters { get; set; }
 }

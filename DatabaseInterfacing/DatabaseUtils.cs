@@ -24,7 +24,7 @@ public abstract class DatabaseUtils : IDesignTimeDbContextFactory<PlantDbContext
     }
 
     //Pulls the connection string from the local appsettings.json
-    private static string GetConnectionString()
+    public static string GetConnectionString()
     {
         return Configuration.GetConnectionString("DefaultConnection") ??
                throw new Exception(

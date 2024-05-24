@@ -103,7 +103,7 @@ public class PlantDataLogic : IPlantDataLogic
     }
 
     public async Task<DisplayPlantTemperatureDto?>
-        CheckWaterTemperatureAsync(int id) //Not sure Ids are supposed to be here
+        CheckWaterTemperatureAsync()
     {
         var jsonString =
             await _connectionController
@@ -147,7 +147,7 @@ public class PlantDataLogic : IPlantDataLogic
         return new DisplayPlantPhDto() { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel };
     }
 
-    public async Task<DisplayPlantECDto?> CheckECAsync(int id)
+    public async Task<DisplayPlantECDto?> CheckECAsync()
     {
         var jsonString =
             await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using IoTInterfacing.Interfaces;
 using System;
+using IoTInterfacing.Encryption;
 
 namespace IoTInterfacing.Implementations;
 
@@ -12,6 +13,7 @@ public class ConnectionController : IConnectionController
     //there to have methods that handle request/response protocols, one for requests from here to the arduino, and one for vise-versa
     private bool IsConnected { get; set; } = true;
     private TcpClient _client = new TcpClient();
+    private IEncryptionHandler _encryptionHandler = new EncryptionHandler();
 
     //Method for opening a server to communicate with the Arduino
     public async Task EstablishConnectionAsync(int port)
@@ -47,7 +49,7 @@ public class ConnectionController : IConnectionController
                 var stream = _client.GetStream();
 
                 // Convert API parameters to bytes and send to Arduino
-                var requestData = Encoding.ASCII.GetBytes(apiParameters);
+                var requestData = Encoding.ASCII.GetBytes(apiParameters); //TODO Put encryption here pls
                 await stream.WriteAsync(requestData);
 
                 // Read response from Arduino

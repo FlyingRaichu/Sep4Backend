@@ -10,9 +10,11 @@ using Auth.ServiceInterfaces;
 using Auth.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
+using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Implementations;
 using IoTInterfacing.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +27,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.Services.AddScoped<ITemplateLogic, TemplateLogic>();
 builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
+builder.Services.AddDbContext<PlantDbContext>(options => options.UseNpgsql(DatabaseUtils.GetConnectionString(),
+    b => b.MigrationsAssembly("WebAPI")));
 builder.WebHost.UseKestrel(options =>
 {
     options.Listen(IPAddress.Any, 5021);

@@ -2,8 +2,9 @@
 
 namespace DatabaseInterfacing.Domain.DTOs;
 
-public class ThresholdDto
+public class ParameterDto
 {
+    public int Id { get; set; }
     [JsonPropertyName("type")]
     public string Type { get; set; }
     [JsonPropertyName("min")]
