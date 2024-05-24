@@ -25,15 +25,15 @@ public class PlantDataLogic : IPlantDataLogic
         {
             ""name"" : ""monitoring_results"",
             ""readings"": [{
-                ""water_conductivity"": 2622,
-                ""water_temperature"" : 23.5,
-                ""water_ph"" : 7.1,
-                ""water_flow"" : 6.2,
-                ""water_level"" : 12,
-                ""air_temperature"" : 20,
-                ""air_humidity"" : 50,
-                ""air_co2"" : 400,
-                ""light_level"" : 10000
+                ""waterConductivity"": 2622,
+                ""waterTemperature"" : 23.5,
+                ""waterPh"" : 7.1,
+                ""waterFlow"" : 6.2,
+                ""waterLevel"" : 12,
+                ""airTemperature"" : 20,
+                ""airHumidity"" : 50,
+                ""airCo2"" : 400,
+                ""lightLevel"" : 10000
             }]
         }";
 
@@ -126,7 +126,7 @@ public class PlantDataLogic : IPlantDataLogic
         //Calling the object created from the JSON config
         var configuration = await _configurationService.GetConfigurationAsync();
 
-        var status = DetermineStatus("water_temperature", plantData.Readings.FirstOrDefault()?.WaterTemperature,
+        var status = DetermineStatus("waterTemperature", plantData.Readings.FirstOrDefault()?.WaterTemperature,
             configuration);
 
         Console.WriteLine($"Plant water temp is: {plantData.Readings.FirstOrDefault()?.WaterTemperature}");
@@ -146,7 +146,7 @@ public class PlantDataLogic : IPlantDataLogic
         });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("water_ph", plantData.Readings.FirstOrDefault()?.WaterPhLevel, configuration);
+        var status = DetermineStatus("waterPh", plantData.Readings.FirstOrDefault()?.WaterPhLevel, configuration);
         return new DisplayPlantPhDto() { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel };
     }
 
@@ -165,7 +165,7 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("water_conductivity", plantData.Readings.FirstOrDefault()?.WaterConductivity,
+        var status = DetermineStatus("waterConductivity", plantData.Readings.FirstOrDefault()?.WaterConductivity,
             configuration);
 
         Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.WaterConductivity}");
@@ -220,9 +220,9 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("water_level", plantData.Readings.FirstOrDefault()?.WaterLevel, configuration);
+        var status = DetermineStatus("waterLevel", plantData.Readings.FirstOrDefault()?.WaterLevel, configuration);
 
-        var dto = new DisplayPlantWaterLevelDto()
+        var dto = new DisplayPlantWaterLevelDto
         {
             Status = status,
             WaterLevelInMillimeters = (float)plantData?.Readings?.FirstOrDefault()?.WaterLevel!
@@ -243,7 +243,7 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("air_temperature", plantData.Readings?.FirstOrDefault()?.AirTemperature,
+        var status = DetermineStatus("airTemperature", plantData.Readings?.FirstOrDefault()?.AirTemperature,
             configuration);
 
         var dto = new DisplayAirTemperatureDto()
@@ -267,7 +267,7 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("air_humidity", plantData.Readings?.FirstOrDefault()?.AirHumidity, configuration);
+        var status = DetermineStatus("airHumidity", plantData.Readings?.FirstOrDefault()?.AirHumidity, configuration);
 
         var dto = new DisplayAirHumidityDto()
         {
@@ -291,7 +291,7 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("air_co2", plantData.Readings?.FirstOrDefault()?.AirCO2, configuration);
+        var status = DetermineStatus("airCo2", plantData.Readings?.FirstOrDefault()?.AirCO2, configuration);
 
         var dto = new DisplayAirCO2Dto()
         {
@@ -321,7 +321,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         var vpd = CalculateVPD(airTemperature.Value, airHumidity.Value);
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("vpd_level", vpd, configuration);
+        var status = DetermineStatus("vpdLevel", vpd, configuration);
 
         return new DisplayVPDLevelDto()
         {
@@ -349,7 +349,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         var dewPoint = CalculateDewPoint(airTemperature.Value, airHumidity.Value);
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("dew_point", dewPoint, configuration);
+        var status = DetermineStatus("dewPoint", dewPoint, configuration);
 
         return new DisplayDewPointDto()
         {
@@ -368,7 +368,7 @@ public class PlantDataLogic : IPlantDataLogic
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("light_level", plantData.Readings.FirstOrDefault()?.LightLevel, configuration);
+        var status = DetermineStatus("lightLevel", plantData.Readings.FirstOrDefault()?.LightLevel, configuration);
 
         return new DisplayLightLevelDto(plantData.Readings.FirstOrDefault()?.LightLevel, status);
     }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Sep4Backend.Controllers;
 
 [ApiController]
+
 [Route("[controller]")]
 public class PlantsController : ControllerBase
 {
