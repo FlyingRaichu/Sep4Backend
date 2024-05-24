@@ -17,12 +17,12 @@ public class TemplatesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Template>> AddTemplateAsync([FromBody] TemplateCreationDto dto)
+    public async Task<ActionResult<Template>> AddTemplateAsync([FromBody] TemplateCreationDto creationDto)
     {
         try
         {
-            var template = await _templateLogic.AddTemplate(dto);
-            return Ok(template);
+            await _templateLogic.AddTemplate(creationDto);
+            return Ok();
         }
         catch (Exception e)
         {
@@ -32,7 +32,7 @@ public class TemplatesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<Template>>> GetAllAsync()
+    public async Task<ActionResult<ICollection<TemplateDto>>> GetAllAsync()
     {
         try
         {

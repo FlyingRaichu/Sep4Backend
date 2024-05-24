@@ -15,12 +15,12 @@ public class TemplateLogic : ITemplateLogic
     {
         _context = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
     }
-    public async Task<Template> AddTemplate(TemplateCreationDto dto)
+    public async Task AddTemplate(TemplateCreationDto creationDto)
     {
         var template = new Template
         {
-            Name = dto.Name,
-            Parameters = dto.Parameters.Select(t => new Parameter
+            Name = creationDto.Name,
+            Parameters = creationDto.Parameters.Select(t => new Parameter
             {
                 Type = t.Type,
                 Min = t.Min,
@@ -29,17 +29,29 @@ public class TemplateLogic : ITemplateLogic
                 Max = t.Max
             }).ToList()
         };
-        Console.WriteLine(template);
-        //_context.Templates.Add(template); 
-        //await _context.SaveChangesAsync(); 
-        return template;
-    }
+        _context.Templates.Add(template); 
+        await _context.SaveChangesAsync();
+        }
 
-    public async Task<ICollection<Template>> GetAllAsync()
+    public async Task<ICollection<TemplateDto>> GetAllAsync()
     {
         var templates = await _context.Templates
-            .Include(t => t.Parameters) 
-            .ToListAsync(); 
+            .Include(t => t.Parameters) // Eager loading for Parameters
+            .Select(t => new TemplateDto() // Map Template to TemplateDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Parameters = t.Parameters.Select(p => new ParameterDto() // Map Parameter to ThresholdDto
+                {
+                    Id = p.Id,
+                    Type = p.Type,
+                    Min = p.Min,
+                    WarningMin = p.WarningMin,
+                    WarningMax = p.WarningMax,
+                    Max = p.Max
+                }).ToList()
+            })
+            .ToListAsync();
         return templates;
     }
 }

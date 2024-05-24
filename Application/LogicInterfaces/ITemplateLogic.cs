@@ -5,6 +5,6 @@ namespace Application.LogicInterfaces;
 
 public interface ITemplateLogic
 {
-    public Task<Template> AddTemplate(TemplateCreationDto dto);
-    public Task<ICollection<Template>> GetAllAsync();
+    public Task AddTemplate(TemplateCreationDto creationDto);
+    public Task<ICollection<TemplateDto>> GetAllAsync();
 }

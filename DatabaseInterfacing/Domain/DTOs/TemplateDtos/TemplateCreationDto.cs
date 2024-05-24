@@ -5,9 +5,8 @@ public class TemplateCreationDto
     public string Name { get; set; }
     public IList<ThresholdDto> Parameters { get; set; }
 
-    public TemplateCreationDto(string name, IList<ThresholdDto> parameters)
+    public TemplateCreationDto()
     {
-        Name = name;
-        Parameters = parameters;
+        
     }
 }
