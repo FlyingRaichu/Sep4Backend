@@ -17,11 +17,11 @@ public class TemplatesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddTemplateAsync([FromBody] TemplateCreationDto creationDto)
+    public async Task<ActionResult> AddTemplateAsync([FromBody] string name)
     {
         try
         {
-            await _templateLogic.AddTemplate(creationDto);
+            await _templateLogic.AddTemplate(name);
             return Ok();
         }
         catch (Exception e)
@@ -77,7 +77,7 @@ public class TemplatesController : ControllerBase
     }
 
     [HttpPatch("/select/{id:int}")]
-    public async Task<ActionResult> SelectTemplateAsync([FromRoute] int id)
+    public async Task<ActionResult> SelectTemplateAsync([FromBody] int id)
     {
         try
         {

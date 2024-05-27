@@ -19,22 +19,31 @@ public class TemplateLogic : ITemplateLogic
         _thresholdConfiguration = thresholdConfiguration;
         _context = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
     }
-    public async Task AddTemplate(TemplateCreationDto creationDto)
+    public async Task AddTemplate(string name)
     {
         try
         {
+            var waterParameterTypes = new List<string>()
+            {
+                "waterPh", "waterLevel", "waterConductivity", "waterTemperature",
+                "waterFlow", "airTemperature", "airHumidity", "airCo2", "vpdLevel", "dewPoint", "lightLevel"
+            };
             var template = new Template
             {
-                Name = creationDto.Name,
-                Parameters = creationDto.Parameters.Select(t => new Parameter
-                {
-                    Type = t.Type,
-                    Min = t.Min,
-                    WarningMin = t.WarningMin,
-                    WarningMax = t.WarningMax,
-                    Max = t.Max
-                }).ToList()
+                Name = name
             };
+            foreach (var type in waterParameterTypes)
+            {
+                template.Parameters.Add(new Parameter()
+                {
+                    Min = 0,
+                    Max = 0,
+                    WarningMax = 0,
+                    WarningMin = 0,
+                    Type = type
+                });
+            }
+            
             _context.Templates.Add(template); 
             await _context.SaveChangesAsync();
         }
