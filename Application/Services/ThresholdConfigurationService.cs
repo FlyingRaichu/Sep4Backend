@@ -136,6 +136,30 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
             WarningMin = 0,
             WarningMax = 0
         });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "dewPoint",
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "lightLevel",
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
+        });
+        dto.Thresholds.Add(new ThresholdDto()
+        {
+            Type = "vpdLevel",
+            Min = 0,
+            Max = 0,
+            WarningMin = 0,
+            WarningMax = 0
+        });
         return dto;
     }
 
