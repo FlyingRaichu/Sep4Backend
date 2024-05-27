@@ -54,4 +54,28 @@ public class TemplateLogic : ITemplateLogic
             .ToListAsync();
         return templates;
     }
+    public async Task UpdateTemplateAsync(int id, IList<ParameterDto> updateDtos)
+{
+    var template = await _context.Templates
+        .Include(t => t.Parameters)
+        .FirstOrDefaultAsync(t => t.Id == id);
+    if (template == null)
+    {
+        throw new Exception("Template not found");
+    }
+
+    foreach (var updateDto in updateDtos)
+    {
+        var parameter = template.Parameters.FirstOrDefault(p => p.Id == updateDto.Id);
+        if (parameter != null)
+        {
+            parameter.Min = updateDto.Min;
+            parameter.WarningMin = updateDto.WarningMin;
+            parameter.WarningMax = updateDto.WarningMax;
+            parameter.Max = updateDto.Max;
+        }
+    }
+
+    await _context.SaveChangesAsync();
+}
 }

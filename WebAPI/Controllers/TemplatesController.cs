@@ -45,4 +45,18 @@ public class TemplatesController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTemplateAsync(int id, [FromBody] IList<ParameterDto> updateDtos)
+    {
+        try
+        {
+            await _templateLogic.UpdateTemplateAsync(id, updateDtos);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
