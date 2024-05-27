@@ -17,8 +17,9 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
 
     public Task<ThresholdConfigurationDto> GetConfigurationAsync()
     {
-        var configDto = new ThresholdConfigurationDto
+        var configDto = new ThresholdConfigurationDto()
         {
+            TemplateName = _currentConfig.TemplateName,
             Thresholds = _currentConfig.Thresholds
         };
         return Task.FromResult(configDto);
@@ -33,6 +34,12 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
         threshold.WarningMin = dto.WarningMin;
         threshold.WarningMax = dto.WarningMax;
         await SaveConfigurationAsync(_currentConfig);
+    }
+
+    public Task ChooseTemplate(string name)
+    {
+        _currentConfig.TemplateName = name;
+        return SaveConfigurationAsync(_currentConfig);
     }
 
     private ThresholdConfigurationDto LoadConfiguration()
@@ -64,6 +71,7 @@ public class ThresholdConfigurationService : IThresholdConfigurationService
     private ThresholdConfigurationDto LoadGeneralConfiguration()
     {
         ThresholdConfigurationDto dto = new ThresholdConfigurationDto();
+        dto.TemplateName = "None";
         dto.Thresholds.Add(new ThresholdDto()
         {
             Type = "waterConductivity",

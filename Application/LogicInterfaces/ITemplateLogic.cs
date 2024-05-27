@@ -7,4 +7,7 @@ public interface ITemplateLogic
 {
     public Task AddTemplate(TemplateCreationDto creationDto);
     public Task<ICollection<TemplateDto>> GetAllAsync();
+    public Task UpdateTemplate(TemplateUpdateDto dto);
+    public Task DeleteTemplate(int id);
+    public Task SelectTemplate(int id);
 }
