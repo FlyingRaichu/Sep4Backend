@@ -10,12 +10,10 @@ namespace Application.Services
     public class AlertNotificationLogic : IAlertNotificationLogic
     {
         private readonly PlantDbContext _context;
-        private readonly IEmailService _emailService;
 
-        public AlertNotificationLogic(PlantDbContext context, IEmailService emailService)
+        public AlertNotificationLogic(PlantDbContext context)
         {
             _context = context;
-            _emailService = emailService;
         }
 
         public async Task CreateAlertNotificationAsync(AlertNotificationDto dto)
@@ -31,9 +29,6 @@ namespace Application.Services
             };
             _context.AlertNotifications.Add(alert);
             await _context.SaveChangesAsync();
-
-            // Send email notification
-            await _emailService.SendEmailAsync(dto.Email, "Alert Created", "An alert has been created.");
         }
 
         public async Task<IEnumerable<AlertNotificationDto>> GetAlertNotificationsAsync()
@@ -64,9 +59,6 @@ namespace Application.Services
             alert.Email = dto.Email;
 
             await _context.SaveChangesAsync();
-
-            // Send email notification
-            await _emailService.SendEmailAsync(dto.Email, "Alert Updated", "An alert has been updated.");
         }
 
         public async Task DeleteAlertNotificationAsync(int id)
@@ -76,9 +68,6 @@ namespace Application.Services
 
             _context.AlertNotifications.Remove(alert);
             await _context.SaveChangesAsync();
-
-            // Send email notification
-            await _emailService.SendEmailAsync(alert.Email, "Alert Deleted", "An alert has been deleted.");
         }
     }
 }

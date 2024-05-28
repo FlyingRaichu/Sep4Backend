@@ -31,6 +31,7 @@ builder.Services.AddScoped<ITemplateLogic, TemplateLogic>();
 builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
 builder.Services.AddScoped<IAlertNotificationLogic, AlertNotificationLogic>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAlertNotificationService, AlertNotificationService>();
 
 ConfigureEmailService(builder.Services, builder.Configuration);
 
