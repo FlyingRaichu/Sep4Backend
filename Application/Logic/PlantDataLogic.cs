@@ -83,6 +83,9 @@ public class PlantDataLogic : IPlantDataLogic
 
         if (searchDto.AirTemperature != null)
             query = query.Where(plant => plant.AirTemperature.Equals(searchDto.AirTemperature));
+        
+        if (searchDto.WaterConductivity != null)
+            query = query.Where(plant => plant.AirTemperature.Equals(searchDto.WaterConductivity));
 
         if (searchDto.AirHumidity != null)
             query = query.Where(plant => plant.AirHumidity.Equals(searchDto.AirHumidity));
