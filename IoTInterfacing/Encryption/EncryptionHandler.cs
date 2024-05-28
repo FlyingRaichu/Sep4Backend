@@ -24,7 +24,7 @@ public class EncryptionHandler : IEncryptionHandler
         eccGenerator.ImportSubjectPublicKeyInfo(theirPublicKey, out _);
 
         var sharedSecret = eccGenerator.DeriveKeyMaterial(eccGenerator.PublicKey);
-        _aesKey = sharedSecret;
+        _aesKey = sharedSecret; //TODO Hash this with SHA1, truncated to 16 bytes
     }
 
     // Method for AES decryption
@@ -42,8 +42,8 @@ public class EncryptionHandler : IEncryptionHandler
         return streamReader.ReadToEnd();
     }
 
-    public byte[] EncryptAes(string plainText, out byte[] iv)
-    {
+    public byte[] EncryptAes(string plainText, out byte[] iv) //TODO You need to send them a basic JSON string with the public key first, elsewhere
+    { 
         using var aes = Aes.Create();
         aes.GenerateIV();
         iv = aes.IV;
@@ -58,10 +58,6 @@ public class EncryptionHandler : IEncryptionHandler
 
         // Write the public key bytes
         Buffer.BlockCopy(PublicKey, 0, message, 4, PublicKey.Length);
-
-        // // Use a delimiter to separate the public key from the encrypted text //TODO this is possibly an alternative, having a sign be the breakpoint if encoding the public key length isn't enough
-        // const byte delimiter = 0x1F;
-        // message[4 + publicKeyBytes.Length] = delimiter;
 
         // Write the encrypted text bytes
         Buffer.BlockCopy(plainTextBytes, 0, message, 4 + PublicKey.Length + 1, plainTextBytes.Length);
