@@ -251,4 +251,18 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    [HttpGet("measurements")]
+    public async Task<IActionResult> GetMeasurements()
+    {
+        try
+        {
+            var measurements = await _logic.GetAllMeasurementsAsync();
+            return Ok(measurements);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }

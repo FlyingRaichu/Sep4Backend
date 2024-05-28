@@ -389,4 +389,27 @@ public class PlantDataLogic : IPlantDataLogic
 
         return isWarningRange ? "Warn" : "Norm";
     }
+    public async Task<ICollection<MeasurementDto>> GetAllMeasurementsAsync()
+{
+    await using var _context = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
+    var measurements = await _context.Measurements
+        .Select(m => new MeasurementDto()
+        {
+            Id = m.Id,
+            Time = m.Time,
+            WaterTemperature = m.WaterTemperature,
+            WaterPH = m.WaterPH,
+            ElectricConductivity = m.ElectricConductivity,
+            FlowRate = m.FlowRate,
+            WaterLevel = m.WaterLevel,
+            AirTemperature = m.AirTemperature,
+            AirHumidity = m.AirHumidity,
+            CO2 = m.CO2,
+            VPD = m.VPD,
+            DewPoint = m.DewPoint,
+            LightLevels = m.LightLevels
+        })
+        .ToListAsync();
+    return measurements;
+}
 }
