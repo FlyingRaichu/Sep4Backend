@@ -104,10 +104,10 @@ void ConfigureEmailService(IServiceCollection services, IConfiguration configura
         throw new InvalidOperationException("SMTP configuration is missing or invalid.");
     }
 
-    if (!int.TryParse(smtpPort, out int port))
+   /* if (!int.TryParse(smtpPort, out int port))
     {
         throw new InvalidOperationException("SMTP port is invalid.");
-    }
+    }*/
 
-    services.PostConfigure<EmailService>(emailService => emailService.Configure(smtpServer, port, smtpUsername, smtpPassword));
+   // services.PostConfigure<EmailService>(emailService => emailService.Configure(smtpServer, port, smtpUsername, smtpPassword));
 }
