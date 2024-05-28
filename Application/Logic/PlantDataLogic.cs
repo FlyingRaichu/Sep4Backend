@@ -19,6 +19,7 @@ public class PlantDataLogic : IPlantDataLogic
 {
     private readonly IConnectionController _connectionController;
     private readonly IThresholdConfigurationService _configurationService;
+    private readonly IAlertNotificationService _alertNotificationService;
 
     private static string TEST = @"
         {
@@ -37,10 +38,12 @@ public class PlantDataLogic : IPlantDataLogic
         }";
 
     public PlantDataLogic(IConnectionController connectionController,
-        IThresholdConfigurationService configurationService)
+        IThresholdConfigurationService configurationService, 
+        IAlertNotificationService alertNotificationService)
     {
         _connectionController = connectionController;
         _configurationService = configurationService;
+        _alertNotificationService = alertNotificationService;
     }
 
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
@@ -111,7 +114,20 @@ public class PlantDataLogic : IPlantDataLogic
         };
         await dbContext.PlantData.AddAsync(data);
         await dbContext.SaveChangesAsync();
+        await CheckAndTriggerAlertsAsync(plantData);
         return plantData;
+    }
+    
+    private async Task CheckAndTriggerAlertsAsync(MonitoringResultDto plantData)
+    {
+        var readings = plantData.Readings.FirstOrDefault();
+        if (readings != null)
+        {
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_temperature", readings.WaterTemperature);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_ph", readings.WaterPhLevel);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.WaterConductivity);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.WaterFlow);
+        }
     }
 
     public async Task<DisplayPlantTemperatureDto?>
