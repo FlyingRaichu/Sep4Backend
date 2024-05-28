@@ -1,4 +1,6 @@
-﻿namespace Application.ServiceInterfaces;
+﻿using DatabaseInterfacing.Domain.DTOs;
+
+namespace Application.ServiceInterfaces;
 
 public interface IOutputService
 {
