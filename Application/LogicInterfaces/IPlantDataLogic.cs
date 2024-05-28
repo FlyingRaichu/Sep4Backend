@@ -5,6 +5,7 @@ namespace Application.LogicInterfaces;
 
 public interface IPlantDataLogic
 {
+    bool WaterFlowCorrectionEnabled { get; set; }
     Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto);
     Task<MonitoringResultDto> GetAllDataAsync();
     Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync();

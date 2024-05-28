@@ -22,6 +22,7 @@ public class PlantDataLogic : IPlantDataLogic
     private readonly IThresholdConfigurationService _configurationService;
     private readonly IAlertNotificationService _alertNotificationService;
     private readonly IOutputService _outputService;
+    public bool WaterFlowCorrectionEnabled { get; set; } = false;
 
     private static string TEST = @"
         {
@@ -56,6 +57,8 @@ public class PlantDataLogic : IPlantDataLogic
         _alertNotificationService = alertNotificationService;
         _outputService = new OutputService(_connectionController);
     }
+
+    
 
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
     {
@@ -235,13 +238,12 @@ public class PlantDataLogic : IPlantDataLogic
         var waterFlowValues = configuration.Thresholds.FirstOrDefault(type => type.Type.Equals("waterFlow"))!;
         
         var perfectThreshold = (waterFlowValues.WarningMin + waterFlowValues.WarningMax) / 2;
-        
-        //TODO Test this
-        //PID and output logic
+
+        if (!WaterFlowCorrectionEnabled) return dto;
         var pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
 
         await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading.GetSingle(), 5));
-        
+
         return dto;
     }
 

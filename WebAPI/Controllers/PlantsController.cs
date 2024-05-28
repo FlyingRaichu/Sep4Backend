@@ -251,4 +251,19 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpPatch("ToggleWaterFlowCorrection")]
+    public async Task<ActionResult> ToggleWaterFlowCorrectionAsync()
+    {
+        try
+        {
+            _logic.WaterFlowCorrectionEnabled = !_logic.WaterFlowCorrectionEnabled;
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
