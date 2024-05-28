@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Sep4Backend.Controllers;
 
 [ApiController]
-
 [Route("[controller]")]
 public class PlantsController : ControllerBase
 {
@@ -43,7 +42,7 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpGet("check")]
+    [HttpGet("/check")]
     public async Task<ActionResult<MonitoringResultDto>> GetAsync()
     {
         try
@@ -58,7 +57,7 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpGet("temperature")]
+    [HttpGet("/temperature")]
     public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync()
     {
         try
@@ -103,7 +102,7 @@ public class PlantsController : ControllerBase
         }
     }
        
-    [HttpGet("ph")]
+    [HttpGet("/ph")]
     public async Task<ActionResult<DisplayPlantPhDto>> CheckPhLevelAsync()
     {
         try
@@ -133,7 +132,7 @@ public class PlantsController : ControllerBase
         }
     }
     
-    [HttpGet("flow")]
+    [HttpGet("plant/flow")]
     public async Task<ActionResult<DisplayPlantWaterFlowDto>> CheckWaterFlowAsync()
     {
         try
