@@ -45,7 +45,6 @@ public class TemplatesController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-
     [HttpPatch]
     public async Task<ActionResult> UpdateTemplateAsync(TemplateUpdateDto dto)
     {
