@@ -22,25 +22,34 @@ public class PlantsController : ControllerBase
         _thresholdConfigurationService = thresholdConfigurationService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
-        [FromQuery] float? waterTemperature,
-        [FromQuery] float? phLevel,
-        [FromQuery] float? waterEC,
-        [FromQuery] float? waterFlow)
+   [HttpGet]
+public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync(
+    [FromQuery] string? plantName,
+    [FromQuery] float? waterConductivity,
+    [FromQuery] float? waterTemperature,
+    [FromQuery] float? waterPhLevel,
+    [FromQuery] float? waterFlow,
+    [FromQuery] float? waterLevel,
+    [FromQuery] float? airTemperature,
+    [FromQuery] float? airHumidity,
+    [FromQuery] float? airCO2,
+    [FromQuery] float? lightLevel,
+    [FromQuery] float? dewPoint,
+    [FromQuery] float? vpdLevel,
+    [FromQuery] DateTime? dateTime)
+{
+    try
     {
-        try
-        {
-            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel, waterEC, waterFlow);
-            var plants = await _logic.GetAsync(searchDto);
-            return Ok(plants);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return StatusCode(500, e.Message);
-        }
+        var searchDto = new SearchPlantDataDto(plantName, waterConductivity, waterTemperature, waterPhLevel, waterFlow, waterLevel, airTemperature, airHumidity, airCO2, lightLevel, dewPoint, vpdLevel, dateTime);
+        var plants = await _logic.GetAsync(searchDto);
+        return Ok(plants);
     }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
 
     [HttpGet("check")]
     public async Task<ActionResult<MonitoringResultDto>> GetAsync()
@@ -251,18 +260,19 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-    [HttpGet("measurements")]
-    public async Task<IActionResult> GetMeasurements()
-    {
-        try
-        {
-            var measurements = await _logic.GetAllMeasurementsAsync();
-            return Ok(measurements);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return StatusCode(500, e.Message);
-        }
-    }
+    
+    // [HttpGet("measurements")]
+    // public async Task<IActionResult> GetMeasurements()
+    // {
+    //     try
+    //     {
+    //         var measurements = await _logic.GetAllMeasurementsAsync();
+    //         return Ok(measurements);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         return StatusCode(500, e.Message);
+    //     }
+    // }
 }

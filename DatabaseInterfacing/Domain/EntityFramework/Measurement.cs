@@ -1,4 +1,8 @@
-﻿namespace DatabaseInterfacing.Domain.EntityFramework;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DatabaseInterfacing.Domain.EntityFramework;
+
 
 public class Measurement
 {

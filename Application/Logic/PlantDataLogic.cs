@@ -38,7 +38,7 @@ public class PlantDataLogic : IPlantDataLogic
         }";
 
     public PlantDataLogic(IConnectionController connectionController,
-        IThresholdConfigurationService configurationService, 
+        IThresholdConfigurationService configurationService,
         IAlertNotificationService alertNotificationService)
     {
         _connectionController = connectionController;
@@ -53,31 +53,41 @@ public class PlantDataLogic : IPlantDataLogic
         var query = dbContext.PlantData.AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.PlantName))
-        {
-            query = query.Where(
-                plant => plant.PlantName.Contains(searchDto.PlantName));
-        }
+            query = query.Where(plant => plant.PlantName.Contains(searchDto.PlantName));
 
         if (searchDto.WaterTemperature != null)
-        {
             query = query.Where(plant => plant.WaterTemperature.Equals(searchDto.WaterTemperature));
-        }
 
-        if (searchDto.PHLevel != null)
-        {
-            query = query.Where(plant => plant.WaterPhLevel.Equals(searchDto.PHLevel));
-        }
+        if (searchDto.WaterPhLevel != null)
+            query = query.Where(plant => plant.WaterPhLevel.Equals(searchDto.WaterPhLevel));
 
         if (searchDto.WaterFlow != null)
-        {
             query = query.Where(plant => plant.WaterFlow.Equals(searchDto.WaterFlow));
-        }
 
-        if (searchDto.WaterEC != null)
-        {
-            query = query.Where(plant => plant.WaterConductivity.Equals(searchDto.WaterEC));
-        }
-        
+        if (searchDto.WaterLevel != null)
+            query = query.Where(plant => plant.WaterLevel.Equals(searchDto.WaterLevel));
+
+        if (searchDto.AirTemperature != null)
+            query = query.Where(plant => plant.AirTemperature.Equals(searchDto.AirTemperature));
+
+        if (searchDto.AirHumidity != null)
+            query = query.Where(plant => plant.AirHumidity.Equals(searchDto.AirHumidity));
+
+        if (searchDto.AirCO2 != null)
+            query = query.Where(plant => plant.AirCO2.Equals(searchDto.AirCO2));
+
+        if (searchDto.LightLevel != null)
+            query = query.Where(plant => plant.LightLevel.Equals(searchDto.LightLevel));
+
+        if (searchDto.DewPoint != null)
+            query = query.Where(plant => plant.DewPoint.Equals(searchDto.DewPoint));
+
+        if (searchDto.VpdLevel != null)
+            query = query.Where(plant => plant.VpdLevel.Equals(searchDto.VpdLevel));
+
+        if (searchDto.DateTime != null)
+            query = query.Where(plant => plant.DateTime.Equals(searchDto.DateTime));
+
         return await query.ToListAsync();
     }
 
@@ -117,7 +127,7 @@ public class PlantDataLogic : IPlantDataLogic
         await CheckAndTriggerAlertsAsync(plantData);
         return plantData;
     }
-    
+
     private async Task CheckAndTriggerAlertsAsync(MonitoringResultDto plantData)
     {
         var readings = plantData.Readings.FirstOrDefault();
@@ -125,7 +135,8 @@ public class PlantDataLogic : IPlantDataLogic
         {
             await _alertNotificationService.CheckAndTriggerAlertsAsync("water_temperature", readings.WaterTemperature);
             await _alertNotificationService.CheckAndTriggerAlertsAsync("water_ph", readings.WaterPhLevel);
-            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.WaterConductivity);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity",
+                readings.WaterConductivity);
             await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.WaterFlow);
         }
     }
@@ -276,7 +287,7 @@ public class PlantDataLogic : IPlantDataLogic
         {
             PropertyNameCaseInsensitive = true
         });
-        
+
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
         var configuration = await _configurationService.GetConfigurationAsync();
@@ -287,10 +298,10 @@ public class PlantDataLogic : IPlantDataLogic
             Status = status,
             AirHumidityPercentage = (float)plantData.Readings?.FirstOrDefault()?.AirHumidity!
         };
-        
+
         return dto;
     }
-    
+
     public async Task<DisplayAirCO2Dto> CheckAirCO2Async()
     {
         var response = TEST;
@@ -314,7 +325,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         return dto;
     }
-    
+
     public async Task<DisplayVPDLevelDto> CheckVPDAsync()
     {
         var response = TEST;
@@ -342,7 +353,7 @@ public class PlantDataLogic : IPlantDataLogic
             VPDLevel = vpd
         };
     }
-    
+
     public async Task<DisplayDewPointDto> CheckDewPointAsync()
     {
         var response = TEST;
@@ -358,7 +369,8 @@ public class PlantDataLogic : IPlantDataLogic
         var airTemperature = plantData.Readings?.FirstOrDefault()?.AirTemperature;
         var airHumidity = plantData.Readings?.FirstOrDefault()?.AirHumidity;
 
-        if (airTemperature == null || airHumidity == null) throw new Exception("Insufficient data to calculate Dew Point.");
+        if (airTemperature == null || airHumidity == null)
+            throw new Exception("Insufficient data to calculate Dew Point.");
 
         var dewPoint = CalculateDewPoint(airTemperature.Value, airHumidity.Value);
         var configuration = await _configurationService.GetConfigurationAsync();
@@ -393,7 +405,7 @@ public class PlantDataLogic : IPlantDataLogic
         float ea = humidity / 100 * es;
         return es - ea;
     }
-    
+
     private static float CalculateDewPoint(float temperature, float humidity)
     {
         // Calculation for Dew Point
@@ -402,7 +414,7 @@ public class PlantDataLogic : IPlantDataLogic
         double alpha = ((a * temperature) / (b + temperature)) + Math.Log(humidity / 100.0);
         return (float)((b * alpha) / (a - alpha));
     }
-    
+
     private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
     {
         var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
@@ -417,27 +429,28 @@ public class PlantDataLogic : IPlantDataLogic
 
         return isWarningRange ? "Warn" : "Norm";
     }
-    public async Task<ICollection<MeasurementDto>> GetAllMeasurementsAsync()
-{
-    await using var _context = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-    var measurements = await _context.Measurements
-        .Select(m => new MeasurementDto()
-        {
-            Id = m.Id,
-            Time = m.Time,
-            WaterTemperature = m.WaterTemperature,
-            WaterPH = m.WaterPH,
-            ElectricConductivity = m.ElectricConductivity,
-            FlowRate = m.FlowRate,
-            WaterLevel = m.WaterLevel,
-            AirTemperature = m.AirTemperature,
-            AirHumidity = m.AirHumidity,
-            CO2 = m.CO2,
-            VPD = m.VPD,
-            DewPoint = m.DewPoint,
-            LightLevels = m.LightLevels
-        })
-        .ToListAsync();
-    return measurements;
-}
+
+    // public async Task<ICollection<MeasurementDto>> GetAllMeasurementsAsync()
+    // {
+    //     await using var _context = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
+    //     var measurements = await _context.Measurements
+    //         .Select(m => new MeasurementDto()
+    //         {
+    //             Id = m.Id,
+    //             Time = m.Time,
+    //             WaterTemperature = m.WaterTemperature,
+    //             WaterPH = m.WaterPH,
+    //             ElectricConductivity = m.ElectricConductivity,
+    //             FlowRate = m.FlowRate,
+    //             WaterLevel = m.WaterLevel,
+    //             AirTemperature = m.AirTemperature,
+    //             AirHumidity = m.AirHumidity,
+    //             CO2 = m.CO2,
+    //             VPD = m.VPD,
+    //             DewPoint = m.DewPoint,
+    //             LightLevels = m.LightLevels
+    //         })
+    //         .ToListAsync();
+    //     return measurements;
+    // }
 }
