@@ -5,5 +5,6 @@ namespace Application.ServiceInterfaces;
 public interface IThresholdConfigurationService
 {
     Task<ThresholdConfigurationDto> GetConfigurationAsync();
-    Task UpdateConfigurationAsync(ThresholdDto dto); 
+    Task UpdateConfigurationAsync(ThresholdDto dto);
+    Task ChooseTemplate(string name);
 }

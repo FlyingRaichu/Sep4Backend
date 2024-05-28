@@ -13,17 +13,39 @@ public class PlantData
     [Column("plant_name")]
     public string PlantName { get; set; }
 
-    [Column("water_temperature")]
-    public float WaterTemperature { get; set; }
+    [Column("waterConductivity")]
+    public float? WaterConductivity { get; set; }
+
+    [Column("waterTemperature")]
+    public float? WaterTemperature { get; set; }
+
+    [Column("waterPh")]
+    public float? WaterPhLevel { get; set; }
+
+    [Column("waterFlow")] 
+    public float? WaterFlow { get; set; }
+
+    [Column("waterLevel")] 
+    public float? WaterLevel { get; set; }
+
+    [Column("airTemperature")] 
+    public float? AirTemperature { get; set; }
+
+    [Column("airHumidity")] 
+    public float? AirHumidity { get; set; }
+        
+    [Column("airCo2")]
+    public float? AirCO2 { get; set; }
+
+    [Column("lightLevel")] 
+    public float? LightLevel { get; set; }
     
-    [Column("ph_level")]
-    public float PhLevel { get; set; }
+    [Column("dewPoint")] 
+    public float? DewPoint { get; set; }
     
-    [Column("water_ec")]
-    public float WaterEC { get; set; }
+    [Column("vpdLevel")] 
+    public float? VpdLevel { get; set; }
     
-    [Column("water_flow")]
-    public float WaterFlow { get; set; }
     [Column("date-time")]
     public DateTime DateTime { get; set; }
 }

@@ -17,11 +17,11 @@ public class TemplatesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Template>> AddTemplateAsync([FromBody] TemplateCreationDto creationDto)
+    public async Task<ActionResult> AddTemplateAsync([FromBody] string name)
     {
         try
         {
-            await _templateLogic.AddTemplate(creationDto);
+            await _templateLogic.AddTemplate(name);
             return Ok();
         }
         catch (Exception e)
@@ -45,12 +45,42 @@ public class TemplatesController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTemplateAsync(int id, [FromBody] IList<ParameterDto> updateDtos)
+    [HttpPatch]
+    public async Task<ActionResult> UpdateTemplateAsync(TemplateUpdateDto dto)
     {
         try
         {
-            await _templateLogic.UpdateTemplateAsync(id, updateDtos);
+            await _templateLogic.UpdateTemplate(dto);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteTemplateAsync([FromRoute] int id)
+    {
+        try
+        {
+            await _templateLogic.DeleteTemplate(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPatch("/select/{id:int}")]
+    public async Task<ActionResult> SelectTemplateAsync([FromBody] int id)
+    {
+        try
+        {
+            await _templateLogic.SelectTemplate(id);
             return Ok();
         }
         catch (Exception e)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using Application.LogicInterfaces;
 using Application.ServiceInterfaces;
@@ -18,6 +19,7 @@ public class PlantDataLogic : IPlantDataLogic
 {
     private readonly IConnectionController _connectionController;
     private readonly IThresholdConfigurationService _configurationService;
+    private readonly IAlertNotificationService _alertNotificationService;
 
     private static string TEST = @"
         {
@@ -36,10 +38,12 @@ public class PlantDataLogic : IPlantDataLogic
         }";
 
     public PlantDataLogic(IConnectionController connectionController,
-        IThresholdConfigurationService configurationService)
+        IThresholdConfigurationService configurationService, 
+        IAlertNotificationService alertNotificationService)
     {
         _connectionController = connectionController;
         _configurationService = configurationService;
+        _alertNotificationService = alertNotificationService;
     }
 
     public async Task<IEnumerable<PlantData>> GetAsync(SearchPlantDataDto searchDto)
@@ -61,7 +65,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         if (searchDto.PHLevel != null)
         {
-            query = query.Where(plant => plant.PhLevel.Equals(searchDto.PHLevel));
+            query = query.Where(plant => plant.WaterPhLevel.Equals(searchDto.PHLevel));
         }
 
         if (searchDto.WaterFlow != null)
@@ -71,7 +75,7 @@ public class PlantDataLogic : IPlantDataLogic
 
         if (searchDto.WaterEC != null)
         {
-            query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
+            query = query.Where(plant => plant.WaterConductivity.Equals(searchDto.WaterEC));
         }
         
         return await query.ToListAsync();
@@ -89,17 +93,41 @@ public class PlantDataLogic : IPlantDataLogic
             });
         if (plantData == null) throw new Exception("Plant Data object is null or empty.");
         await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
+        var dewPoint = await CheckDewPointAsync();
+        var vpdLevel = await CheckVPDAsync();
+        var formattedDateTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss");
         PlantData data = new PlantData()
         {
             PlantName = plantData.Name,
-            PhLevel = (float)plantData.Readings.FirstOrDefault()?.WaterPhLevel!,
-            WaterEC = (float)plantData.Readings.FirstOrDefault()?.WaterConductivity!,
+            WaterPhLevel = (float)plantData.Readings.FirstOrDefault()?.WaterPhLevel!,
+            WaterConductivity = (float)plantData.Readings.FirstOrDefault()?.WaterConductivity!,
             WaterTemperature = (float)plantData.Readings.FirstOrDefault()?.WaterTemperature!,
             WaterFlow = (float)plantData.Readings.FirstOrDefault()?.WaterFlow!,
-            DateTime = DateTime.Now
+            WaterLevel = (float)plantData.Readings.FirstOrDefault()?.WaterLevel!,
+            AirHumidity = (float)plantData.Readings.FirstOrDefault()?.AirHumidity!,
+            AirCO2 = (float)plantData.Readings.FirstOrDefault()?.AirCO2!,
+            AirTemperature = (float)plantData.Readings.FirstOrDefault()?.AirTemperature!,
+            DewPoint = (float)dewPoint.DewPoint!,
+            VpdLevel = (float)vpdLevel.VPDLevel!,
+            LightLevel = (float)plantData.Readings.FirstOrDefault()?.LightLevel!,
+            DateTime = DateTime.ParseExact(formattedDateTime, "MM/dd/yyyy hh:mm:ss", CultureInfo.InvariantCulture)
         };
         await dbContext.PlantData.AddAsync(data);
+        await dbContext.SaveChangesAsync();
+        await CheckAndTriggerAlertsAsync(plantData);
         return plantData;
+    }
+    
+    private async Task CheckAndTriggerAlertsAsync(MonitoringResultDto plantData)
+    {
+        var readings = plantData.Readings.FirstOrDefault();
+        if (readings != null)
+        {
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_temperature", readings.WaterTemperature);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_ph", readings.WaterPhLevel);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.WaterConductivity);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.WaterFlow);
+        }
     }
 
     public async Task<DisplayPlantTemperatureDto?>

@@ -5,8 +5,11 @@ namespace Application.LogicInterfaces;
 
 public interface ITemplateLogic
 {
-    public Task AddTemplate(TemplateCreationDto creationDto);
+    public Task AddTemplate(string name);
     public Task<ICollection<TemplateDto>> GetAllAsync();
-
     public Task UpdateTemplateAsync(int id, IList<ParameterDto> updateDtos);
+
+    public Task UpdateTemplate(TemplateUpdateDto dto);
+    public Task DeleteTemplate(int id);
+    public Task SelectTemplate(int id);
 }
