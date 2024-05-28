@@ -40,7 +40,8 @@ public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync(
 {
     try
     {
-        var searchDto = new SearchPlantDataDto(plantName, waterConductivity, waterTemperature, waterPhLevel, waterFlow, waterLevel, airTemperature, airHumidity, airCO2, lightLevel, dewPoint, vpdLevel, dateTime);
+        var searchDto = new SearchPlantDataDto(plantName, waterConductivity, waterTemperature, waterPhLevel, waterFlow,
+            waterLevel, airTemperature, airHumidity, airCO2, lightLevel, dewPoint, vpdLevel, dateTime);
         var plants = await _logic.GetAsync(searchDto);
         return Ok(plants);
     }
