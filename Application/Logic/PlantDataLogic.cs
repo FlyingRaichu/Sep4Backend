@@ -110,8 +110,8 @@ public class PlantDataLogic : IPlantDataLogic
         var data = new PlantData()
         {
             PlantName = plantData.Name,
-            PhLevel = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle()!,
-            WaterEC = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle()!,
+            WaterPhLevel = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle()!,
+            WaterConductivity = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle()!,
             WaterTemperature = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle()!,
             WaterFlow = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterFlow"].GetSingle()!,
             WaterLevel = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterLevel"].GetSingle()!,
@@ -135,10 +135,10 @@ public class PlantDataLogic : IPlantDataLogic
         var readings = plantData.Readings.FirstOrDefault();
         if (readings != null)
         {
-            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_temperature", readings.WaterTemperature);
-            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_ph", readings.WaterPhLevel);
-            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.WaterConductivity);
-            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.WaterFlow);
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_temperature", readings.Measurements["waterTemperature"].GetSingle());
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_ph", readings.Measurements["waterPh"].GetSingle());
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.Measurements["waterConductivity"].GetSingle());
+            await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.Measurements["waterFlow"].GetSingle());
         }
     }
 
