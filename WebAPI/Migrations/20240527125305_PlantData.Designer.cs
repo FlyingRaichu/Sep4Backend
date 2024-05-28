@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Sep4Backend.Migrations
 {
     [DbContext(typeof(PlantDbContext))]
-    [Migration("20240524113844_Templates")]
-    partial class Templates
+    [Migration("20240527125305_PlantData")]
+    partial class PlantData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,30 +67,58 @@ namespace Sep4Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<float?>("AirCO2")
+                        .HasColumnType("real")
+                        .HasColumnName("airCo2");
+
+                    b.Property<float?>("AirHumidity")
+                        .HasColumnType("real")
+                        .HasColumnName("airHumidity");
+
+                    b.Property<float?>("AirTemperature")
+                        .HasColumnType("real")
+                        .HasColumnName("airTemperature");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date-time");
 
-                    b.Property<float>("PhLevel")
+                    b.Property<float?>("DewPoint")
                         .HasColumnType("real")
-                        .HasColumnName("ph_level");
+                        .HasColumnName("dewPoint");
+
+                    b.Property<float?>("LightLevel")
+                        .HasColumnType("real")
+                        .HasColumnName("lightLevel");
 
                     b.Property<string>("PlantName")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("plant_name");
 
-                    b.Property<float>("WaterEC")
+                    b.Property<float?>("VpdLevel")
                         .HasColumnType("real")
-                        .HasColumnName("water_ec");
+                        .HasColumnName("vpdLevel");
 
-                    b.Property<float>("WaterFlow")
+                    b.Property<float?>("WaterConductivity")
                         .HasColumnType("real")
-                        .HasColumnName("water_flow");
+                        .HasColumnName("waterConductivity");
 
-                    b.Property<float>("WaterTemperature")
+                    b.Property<float?>("WaterFlow")
                         .HasColumnType("real")
-                        .HasColumnName("water_temperature");
+                        .HasColumnName("waterFlow");
+
+                    b.Property<float?>("WaterLevel")
+                        .HasColumnType("real")
+                        .HasColumnName("waterLevel");
+
+                    b.Property<float?>("WaterPhLevel")
+                        .HasColumnType("real")
+                        .HasColumnName("waterPh");
+
+                    b.Property<float?>("WaterTemperature")
+                        .HasColumnType("real")
+                        .HasColumnName("waterTemperature");
 
                     b.HasKey("Id");
 
