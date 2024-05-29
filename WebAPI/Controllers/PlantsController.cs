@@ -96,9 +96,9 @@ public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync(
             return StatusCode(500, e.Message);
         }
     }
-
     [HttpPatch("thresholds")]
     public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdDto dto)
+
     {
         try
         {
