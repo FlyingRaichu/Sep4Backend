@@ -11,6 +11,13 @@
       <ProjectReference Include="..\IoTInterfacing\IoTInterfacing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Castle.Core" Version="5.1.1" />
+      <PackageReference Include="Moq" Version="4.20.70" />
+      <PackageReference Include="xunit" Version="2.8.0" />
+    </ItemGroup>
+
+
 
 
 </Project>

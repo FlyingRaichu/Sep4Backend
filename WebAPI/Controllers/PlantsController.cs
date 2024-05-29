@@ -22,18 +22,43 @@ public class PlantsController : ControllerBase
         _thresholdConfigurationService = thresholdConfigurationService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync([FromQuery] string? plantName,
-        [FromQuery] float? waterTemperature,
-        [FromQuery] float? phLevel,
-        [FromQuery] float? waterEC,
-        [FromQuery] float? waterFlow)
+   [HttpGet]
+public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync(
+    [FromQuery] string? plantName,
+    [FromQuery] float? waterConductivity,
+    [FromQuery] float? waterTemperature,
+    [FromQuery] float? waterPhLevel,
+    [FromQuery] float? waterFlow,
+    [FromQuery] float? waterLevel,
+    [FromQuery] float? airTemperature,
+    [FromQuery] float? airHumidity,
+    [FromQuery] float? airCO2,
+    [FromQuery] float? lightLevel,
+    [FromQuery] float? dewPoint,
+    [FromQuery] float? vpdLevel,
+    [FromQuery] DateTime? dateTime)
+{
+    try
+    {
+        var searchDto = new SearchPlantDataDto(plantName, waterConductivity, waterTemperature, waterPhLevel, waterFlow,
+            waterLevel, airTemperature, airHumidity, airCO2, lightLevel, dewPoint, vpdLevel, dateTime);
+        var plants = await _logic.GetAsync(searchDto);
+        return Ok(plants);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+
+    [HttpGet("/check")]
+    public async Task<ActionResult<MonitoringResultDto>> GetAsync()
     {
         try
         {
-            var searchDto = new SearchPlantDataDto(plantName, waterTemperature, phLevel, waterEC, waterFlow);
-            var plants = await _logic.GetAsync(searchDto);
-            return Ok(plants);
+            var response = await _logic.GetAllDataAsync();
+            return Ok(response);
         }
         catch (Exception e)
         {
@@ -42,12 +67,12 @@ public class PlantsController : ControllerBase
         }
     }
 
-    [HttpGet("{id:int}/temperature")]
-    public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync(int id)
+    [HttpGet("/temperature")]
+    public async Task<ActionResult<ActionResult<string>>> GetPlantTemperatureAsync()
     {
         try
         {
-            var response = await _logic.CheckTemperatureAsync(id);
+            var response = await _logic.CheckWaterTemperatureAsync();
             return Ok(response);
         }
         catch (Exception e)
@@ -71,13 +96,13 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    [HttpPatch("thresholds")]
+    public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdDto dto)
 
-    [HttpPut("thresholds")]
-    public async Task<IActionResult> UpdateThresholdConfigurationAsync([FromBody] ThresholdConfigurationDto configurationDto)
     {
         try
         {
-            await _thresholdConfigurationService.UpdateConfigurationAsync(configurationDto);
+            await _thresholdConfigurationService.UpdateConfigurationAsync(dto);
             return Ok();
         }
         catch (Exception e)
@@ -102,12 +127,12 @@ public class PlantsController : ControllerBase
         }
     }
     
-    [HttpGet("{id:int}/waterEC")]
-    public async Task<ActionResult<string>> GetPlantEC(int id)
+    [HttpGet("waterEC")]
+    public async Task<ActionResult<string>> GetPlantEC()
     {
         try
         {
-            var response = await _logic.CheckECAsync(id);
+            var response = await _logic.CheckECAsync();
             return Ok(response);
         }
         catch (Exception e)
@@ -131,4 +156,139 @@ public class PlantsController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet("waterLevel")]
+    public async Task<ActionResult<DisplayPlantWaterLevelDto>> CheckWaterLevelAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckWaterLevelAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("airTemperature")]
+    public async Task<ActionResult<DisplayAirTemperatureDto>> CheckAirTemperatureAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckAirTemperatureAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("airHumidity")]
+    public async Task<ActionResult<DisplayAirHumidityDto>> CheckAirHumidityAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckAirHumidityAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet("airCO2")]
+    public async Task<ActionResult<DisplayAirCO2Dto>> CheckAirCO2Async()
+    {
+        try
+        {
+            var response = await _logic.CheckAirCO2Async();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("vpd")]
+    public async Task<ActionResult<DisplayVPDLevelDto>> CheckVPDAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckVPDAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("dewPoint")]
+    public async Task<ActionResult<DisplayDewPointDto>> CheckDewPointAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckDewPointAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    [HttpGet("lightLevel")]
+    public async Task<ActionResult<DisplayLightLevelDto>> CheckLightLevelsAsync()
+    {
+        try
+        {
+            var response = await _logic.CheckLightLevelAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPatch("ToggleWaterFlowCorrection")]
+    public async Task<ActionResult> ToggleWaterFlowCorrectionAsync()
+    {
+        try
+        {
+            var response = await _logic.ToggleWaterFlowCorrectionAsync();
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+    
+    // [HttpGet("measurements")]
+    // public async Task<IActionResult> GetMeasurements()
+    // {
+    //     try
+    //     {
+    //         var measurements = await _logic.GetAllMeasurementsAsync();
+    //         return Ok(measurements);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         return StatusCode(500, e.Message);
+    //     }
+    // }
 }

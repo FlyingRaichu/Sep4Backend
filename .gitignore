@@ -558,6 +558,5 @@ model.nuget.info
 # Exclude NuGet cache files
 nuget.cache
 
-#appsettings.json ignores
-DatabaseInterfacing/appsettings.json
 
+WebAPI/Config/thresholdConfig.json

@@ -10,12 +10,19 @@ using Auth.ServiceInterfaces;
 using Auth.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
+using DatabaseInterfacing.Domain.EntityFramework;
 using IoTInterfacing.Implementations;
 using IoTInterfacing.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var smtpServer = builder.Configuration["Smtp:Server"];
+var smtpPort = int.Parse(builder.Configuration["Smtp:Port"]);
+var smtpUsername = builder.Configuration["Smtp:Username"];
+var smtpPassword = builder.Configuration["Smtp:Password"];
 
 // Add services to the container.
 
@@ -24,8 +31,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
+builder.Services.AddScoped<IWaterDataLogic, WaterDataLogic>();
+builder.Services.AddScoped<IAirDataLogic, AirDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+builder.Services.AddScoped<ITemplateLogic, TemplateLogic>();
 builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
+builder.Services.AddScoped<IAlertNotificationLogic, AlertNotificationLogic>();
+builder.Services.AddSingleton<IEmailService>(new EmailService(smtpServer, smtpPort, smtpUsername, smtpPassword));
+builder.Services.AddScoped<IAlertNotificationService, AlertNotificationService>();
+
+builder.Services.AddDbContext<PlantDbContext>(options => options.UseNpgsql(DatabaseUtils.GetConnectionString(),
+    b => b.MigrationsAssembly("WebAPI")));
+
 builder.WebHost.UseKestrel(options =>
 {
     options.Listen(IPAddress.Any, 5021);
