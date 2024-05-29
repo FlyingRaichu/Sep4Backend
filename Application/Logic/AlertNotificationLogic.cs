@@ -11,12 +11,10 @@ namespace Application.Logic
     public class AlertNotificationLogic : IAlertNotificationLogic
     {
         private readonly PlantDbContext _context;
-        private readonly IEmailService _emailService;
 
-        public AlertNotificationLogic(PlantDbContext context, IEmailService emailService)
+        public AlertNotificationLogic(PlantDbContext context)
         {
             _context = context;
-            _emailService = emailService;
         }
 
         public async Task<AlertNotificationDto> GetAlertNotificationAsync(int id)
@@ -33,38 +31,36 @@ namespace Application.Logic
                 ParameterType = alert.ParameterType,
                 ThresholdMin = alert.ThresholdMin,
                 ThresholdMax = alert.ThresholdMax,
-                Email = alert.Email
+                Email = alert.Email,
+                IsThresholdMinEnabled = alert.ThresholdMin > double.NegativeInfinity,
+                IsThresholdMaxEnabled = alert.ThresholdMax < double.PositiveInfinity
             };
         }
 
-        public async Task UpdateAlertNotificationAsync(int id, double thresholdMin, double thresholdMax)
+        public async Task UpdateAlertNotificationAsync(int id, bool isThresholdMinEnabled, bool isThresholdMaxEnabled)
         {
             var alert = await _context.AlertNotifications.FindAsync(id);
             if (alert == null) throw new Exception("Alert notification not found");
 
-            alert.ThresholdMin = thresholdMin;
-            alert.ThresholdMax = thresholdMax;
+            alert.ThresholdMin = isThresholdMinEnabled ? alert.ThresholdMin : double.NegativeInfinity;
+            alert.ThresholdMax = isThresholdMaxEnabled ? alert.ThresholdMax : double.PositiveInfinity;
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task CheckAndTriggerAlertsAsync(string parameterType, double? reading)
+        public async Task<IEnumerable<AlertNotificationDto>> GetAlertNotificationsAsync()
         {
-            if (reading == null)
-                return;
-
-            var alerts = await _context.AlertNotifications
-                .Where(a => a.ParameterType == parameterType)
-                .ToListAsync();
-
-            foreach (var alert in alerts)
-            {
-                if (reading <= alert.ThresholdMin || reading >= alert.ThresholdMax)
+            return await _context.AlertNotifications
+                .Select(a => new AlertNotificationDto
                 {
-                    // Send email logic here
-                    await _emailService.SendEmailAsync(alert.Email, $"Alert for {parameterType}", $"The value for {parameterType} has reached {reading}");
-                }
-            }
+                    Id = a.Id,
+                    ParameterType = a.ParameterType,
+                    ThresholdMin = a.ThresholdMin,
+                    ThresholdMax = a.ThresholdMax,
+                    Email = a.Email,
+                    IsThresholdMinEnabled = a.ThresholdMin > double.NegativeInfinity,
+                    IsThresholdMaxEnabled = a.ThresholdMax < double.PositiveInfinity
+                }).ToListAsync();
         }
     }
 }

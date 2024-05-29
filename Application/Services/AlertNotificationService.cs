@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Application.LogicInterfaces;
 using Application.ServiceInterfaces;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
@@ -8,46 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
- public class AlertNotificationService : IAlertNotificationService
+    public class AlertNotificationService : IAlertNotificationService
     {
-        private readonly PlantDbContext _context;
+        private readonly IAlertNotificationLogic _alertNotificationLogic;
         private readonly IEmailService _emailService;
 
-        public AlertNotificationService(PlantDbContext context, IEmailService emailService)
+        public AlertNotificationService(IAlertNotificationLogic alertNotificationLogic, IEmailService emailService)
         {
-            _context = context;
+            _alertNotificationLogic = alertNotificationLogic;
             _emailService = emailService;
-        }
-
-        public async Task<IEnumerable<AlertNotificationDto>> GetAllAsync()
-        {
-            return await _context.AlertNotifications
-                .Select(alert => new AlertNotificationDto
-                {
-                    Id = alert.Id,
-                    ParameterType = alert.ParameterType,
-                    ThresholdMin = alert.ThresholdMin,
-                    ThresholdMax = alert.ThresholdMax,
-                    Email = alert.Email
-                })
-                .ToListAsync();
-        }
-
-        public async Task UpdateAlertNotificationAsync(int id, AlertNotificationDto updateDto)
-        {
-            var alert = await _context.AlertNotifications.FirstOrDefaultAsync(a => a.Id == id);
-
-            if (alert == null)
-            {
-                throw new KeyNotFoundException("Alert notification not found");
-            }
-
-            alert.ThresholdMin = updateDto.ThresholdMin;
-            alert.ThresholdMax = updateDto.ThresholdMax;
-            alert.Email = updateDto.Email;
-
-            _context.AlertNotifications.Update(alert);
-            await _context.SaveChangesAsync();
         }
 
         public async Task CheckAndTriggerAlertsAsync(string parameterType, double? reading)
@@ -55,13 +25,13 @@ namespace Application.Services
             if (reading == null)
                 return;
 
-            var alerts = await _context.AlertNotifications
-                .Where(a => a.ParameterType == parameterType)
-                .ToListAsync();
+            var alerts = await _alertNotificationLogic.GetAlertNotificationsAsync();
+            var relevantAlerts = alerts.Where(a => a.ParameterType == parameterType).ToList();
 
-            foreach (var alert in alerts)
+            foreach (var alert in relevantAlerts)
             {
-                if (reading <= alert.ThresholdMin || reading >= alert.ThresholdMax)
+                if ((alert.IsThresholdMinEnabled && reading <= alert.ThresholdMin) ||
+                    (alert.IsThresholdMaxEnabled && reading >= alert.ThresholdMax))
                 {
                     // Send email logic here
                     await _emailService.SendEmailAsync(alert.Email, $"Alert for {parameterType}", $"The value for {parameterType} has reached {reading}");
@@ -69,4 +39,5 @@ namespace Application.Services
             }
         }
     }
+
 }

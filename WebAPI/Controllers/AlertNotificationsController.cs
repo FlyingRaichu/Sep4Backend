@@ -35,7 +35,7 @@ namespace Sep4Backend.Controllers
         {
             try
             {
-                await _alertNotificationLogic.UpdateAlertNotificationAsync(id, updateDto.ThresholdMin, updateDto.ThresholdMax);
+                await _alertNotificationLogic.UpdateAlertNotificationAsync(id, updateDto.IsThresholdMinEnabled, updateDto.IsThresholdMaxEnabled);
                 return Ok();
             }
             catch (Exception ex)
@@ -44,4 +44,5 @@ namespace Sep4Backend.Controllers
             }
         }
     }
+
 }
