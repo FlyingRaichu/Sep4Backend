@@ -8,13 +8,11 @@ namespace Application.Services;
 public class OutputService : IOutputService
 {
     private readonly IConnectionController _connectionController;
-    public bool Enabled { get; set; }
 
 
     public OutputService(IConnectionController connectionController)
     {
         _connectionController = connectionController;
-        Enabled = false;
     }
 
     public async Task<MonitoringResultDto> AlterPumpAsync(string requestType, int valueInPercent)
