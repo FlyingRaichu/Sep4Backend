@@ -8,89 +8,65 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class AlertNotificationService : IAlertNotificationService
+ public class AlertNotificationService : IAlertNotificationService
     {
+        private readonly PlantDbContext _context;
         private readonly IEmailService _emailService;
-        private readonly IThresholdConfigurationService _thresholdConfigurationService;
 
-        public AlertNotificationService(IEmailService emailService, IThresholdConfigurationService thresholdConfigurationService)
+        public AlertNotificationService(PlantDbContext context, IEmailService emailService)
         {
+            _context = context;
             _emailService = emailService;
-            _thresholdConfigurationService = thresholdConfigurationService;
         }
 
-        public async Task CheckAndTriggerAlertsAsync(string parameterType, float? value)
+        public async Task<IEnumerable<AlertNotificationDto>> GetAllAsync()
         {
-            if (value == null) return;
+            return await _context.AlertNotifications
+                .Select(alert => new AlertNotificationDto
+                {
+                    Id = alert.Id,
+                    ParameterType = alert.ParameterType,
+                    ThresholdMin = alert.ThresholdMin,
+                    ThresholdMax = alert.ThresholdMax,
+                    Email = alert.Email
+                })
+                .ToListAsync();
+        }
 
-            var config = await _thresholdConfigurationService.GetConfigurationAsync();
-            var threshold = config.Thresholds.FirstOrDefault(t => t.Type == parameterType);
-            if (threshold == null) return;
+        public async Task UpdateAlertNotificationAsync(int id, AlertNotificationDto updateDto)
+        {
+            var alert = await _context.AlertNotifications.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (value >= threshold.Max || value <= threshold.Min || value >= threshold.WarningMax || value <= threshold.WarningMin)
+            if (alert == null)
             {
-                var alertMessage = $"Alert: {parameterType} has reached a critical value of {value}. Thresholds: Min={threshold.Min}, Max={threshold.Max}, WarningMin={threshold.WarningMin}, WarningMax={threshold.WarningMax}.";
-                await _emailService.SendEmailAsync("alert@example.com", $"Alert: {parameterType}", alertMessage); // Use actual recipient email address here
+                throw new KeyNotFoundException("Alert notification not found");
             }
+
+            alert.ThresholdMin = updateDto.ThresholdMin;
+            alert.ThresholdMax = updateDto.ThresholdMax;
+            alert.Email = updateDto.Email;
+
+            _context.AlertNotifications.Update(alert);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task CreateAlertNotificationAsync(AlertNotificationDto alertNotificationDto)
+        public async Task CheckAndTriggerAlertsAsync(string parameterType, double? reading)
         {
-            await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-            var alertNotification = new AlertNotification
+            if (reading == null)
+                return;
+
+            var alerts = await _context.AlertNotifications
+                .Where(a => a.ParameterType == parameterType)
+                .ToListAsync();
+
+            foreach (var alert in alerts)
             {
-                ParameterType = alertNotificationDto.ParameterType,
-                ThresholdMin = alertNotificationDto.ThresholdMin,
-                ThresholdMax = alertNotificationDto.ThresholdMax,
-                WarningMin = alertNotificationDto.WarningMin,
-                WarningMax = alertNotificationDto.WarningMax,
-                Email = alertNotificationDto.Email
-            };
-            await dbContext.AlertNotifications.AddAsync(alertNotification);
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<AlertNotificationDto>> GetAllAlertNotificationsAsync()
-        {
-            await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-            var alertNotifications = await dbContext.AlertNotifications.ToListAsync();
-            return alertNotifications.Select(a => new AlertNotificationDto
-            {
-                Id = a.Id,
-                ParameterType = a.ParameterType,
-                ThresholdMin = a.ThresholdMin,
-                ThresholdMax = a.ThresholdMax,
-                WarningMin = a.WarningMin,
-                WarningMax = a.WarningMax,
-                Email = a.Email
-            }).ToList();
-        }
-
-        public async Task UpdateAlertNotificationAsync(AlertNotificationDto alertNotificationDto)
-        {
-            await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-            var alertNotification = await dbContext.AlertNotifications.FindAsync(alertNotificationDto.Id);
-            if (alertNotification == null) throw new Exception("Alert notification not found.");
-
-            alertNotification.ParameterType = alertNotificationDto.ParameterType;
-            alertNotification.ThresholdMin = alertNotificationDto.ThresholdMin;
-            alertNotification.ThresholdMax = alertNotificationDto.ThresholdMax;
-            alertNotification.WarningMin = alertNotificationDto.WarningMin;
-            alertNotification.WarningMax = alertNotificationDto.WarningMax;
-            alertNotification.Email = alertNotificationDto.Email;
-
-            dbContext.AlertNotifications.Update(alertNotification);
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task DeleteAlertNotificationAsync(int id)
-        {
-            await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-            var alertNotification = await dbContext.AlertNotifications.FindAsync(id);
-            if (alertNotification == null) throw new Exception("Alert notification not found.");
-
-            dbContext.AlertNotifications.Remove(alertNotification);
-            await dbContext.SaveChangesAsync();
+                if (reading <= alert.ThresholdMin || reading >= alert.ThresholdMax)
+                {
+                    // Send email logic here
+                    await _emailService.SendEmailAsync(alert.Email, $"Alert for {parameterType}", $"The value for {parameterType} has reached {reading}");
+                }
+            }
         }
     }
 }

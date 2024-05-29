@@ -18,12 +18,6 @@ public class AlertNotification
     
     [Column("threshold_max")]
     public double ThresholdMax { get; set; }
-    
-    [Column("warning_min")]
-    public double WarningMin { get; set; }
-    
-    [Column("warning_max")]
-    public double WarningMax { get; set; }
 
     [Required]
     [EmailAddress]

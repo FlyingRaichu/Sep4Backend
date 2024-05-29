@@ -4,9 +4,8 @@ namespace Application.ServiceInterfaces;
 
 public interface IAlertNotificationService
 {
-        Task CheckAndTriggerAlertsAsync(string parameterType, float? value);
-        Task CreateAlertNotificationAsync(AlertNotificationDto alertNotificationDto);
-        Task<IEnumerable<AlertNotificationDto>> GetAllAlertNotificationsAsync();
-        Task UpdateAlertNotificationAsync(AlertNotificationDto alertNotificationDto);
-        Task DeleteAlertNotificationAsync(int id);
+        Task<IEnumerable<AlertNotificationDto>> GetAllAsync();
+        Task UpdateAlertNotificationAsync(int id, AlertNotificationDto updateDto);
+        Task CheckAndTriggerAlertsAsync(string parameterType, double? reading);
+
 }

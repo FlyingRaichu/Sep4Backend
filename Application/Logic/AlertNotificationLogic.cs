@@ -1,11 +1,10 @@
 using Application.LogicInterfaces;
+using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Application.ServiceInterfaces;
-using DatabaseInterfacing.Context;
 
-namespace Application.Services
+namespace Application.Logic
 {
     public class AlertNotificationLogic : IAlertNotificationLogic
     {
@@ -23,8 +22,6 @@ namespace Application.Services
                 ParameterType = dto.ParameterType,
                 ThresholdMin = dto.ThresholdMin,
                 ThresholdMax = dto.ThresholdMax,
-                WarningMin = dto.WarningMin,
-                WarningMax = dto.WarningMax,
                 Email = dto.Email
             };
             _context.AlertNotifications.Add(alert);
@@ -40,8 +37,6 @@ namespace Application.Services
                     ParameterType = a.ParameterType,
                     ThresholdMin = a.ThresholdMin,
                     ThresholdMax = a.ThresholdMax,
-                    WarningMin = a.WarningMin,
-                    WarningMax = a.WarningMax,
                     Email = a.Email
                 }).ToListAsync();
         }
@@ -54,8 +49,6 @@ namespace Application.Services
             alert.ParameterType = dto.ParameterType;
             alert.ThresholdMin = dto.ThresholdMin;
             alert.ThresholdMax = dto.ThresholdMax;
-            alert.WarningMin = dto.WarningMin;
-            alert.WarningMax = dto.WarningMax;
             alert.Email = dto.Email;
 
             await _context.SaveChangesAsync();

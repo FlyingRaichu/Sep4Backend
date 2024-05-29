@@ -1,4 +1,5 @@
 using Application.LogicInterfaces;
+using Application.ServiceInterfaces;
 using DatabaseInterfacing.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,66 +9,31 @@ namespace Sep4Backend.Controllers
     [Route("[controller]")]
     public class AlertNotificationsController : ControllerBase
     {
-        private readonly IAlertNotificationLogic _alertNotificationLogic;
+        private readonly IAlertNotificationService _alertNotificationService;
 
-        public AlertNotificationsController(IAlertNotificationLogic alertNotificationLogic)
+        public AlertNotificationsController(IAlertNotificationService alertNotificationService)
         {
-            _alertNotificationLogic = alertNotificationLogic;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateAlertNotificationAsync([FromBody] AlertNotificationDto dto)
-        {
-            try
-            {
-                await _alertNotificationLogic.CreateAlertNotificationAsync(dto);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
+            _alertNotificationService = alertNotificationService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AlertNotificationDto>>> GetAlertNotificationsAsync()
+        public async Task<ActionResult<IEnumerable<AlertNotificationDto>>> GetAsync()
         {
-            try
-            {
-                var alerts = await _alertNotificationLogic.GetAlertNotificationsAsync();
-                return Ok(alerts);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
+            var alerts = await _alertNotificationService.GetAllAsync();
+            return Ok(alerts);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateAlertNotificationAsync([FromBody] AlertNotificationDto dto)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateAlertNotificationAsync(int id, [FromBody] AlertNotificationDto updateDto)
         {
             try
             {
-                await _alertNotificationLogic.UpdateAlertNotificationAsync(dto);
+                await _alertNotificationService.UpdateAlertNotificationAsync(id, updateDto);
                 return Ok();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAlertNotificationAsync(int id)
-        {
-            try
-            {
-                await _alertNotificationLogic.DeleteAlertNotificationAsync(id);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
+                return BadRequest(ex.Message);
             }
         }
     }
