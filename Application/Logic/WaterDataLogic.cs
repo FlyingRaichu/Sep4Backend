@@ -106,7 +106,7 @@ namespace Application.Logic
 
             if (!WaterFlowCorrectionEnabled) return dto;
 
-            var pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
+            IPidService pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
             await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading.GetSingle(), 5));
 
             return dto;
