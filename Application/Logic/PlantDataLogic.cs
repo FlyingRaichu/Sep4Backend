@@ -24,7 +24,6 @@ public class PlantDataLogic : IPlantDataLogic
     private readonly IOutputService _outputService;
     private readonly IWaterDataLogic _waterDataLogic;
     private readonly IAirDataLogic _airDataLogic;
-    public bool WaterFlowCorrectionEnabled { get; set; } = false;
 
     private static string TEST = @"
         {
@@ -160,6 +159,11 @@ public class PlantDataLogic : IPlantDataLogic
             await _alertNotificationService.CheckAndTriggerAlertsAsync("water_conductivity", readings.Measurements["waterConductivity"].GetSingle());
             await _alertNotificationService.CheckAndTriggerAlertsAsync("water_flow", readings.Measurements["waterFlow"].GetSingle());
         }
+    }
+
+    public async Task<bool> ToggleWaterFlowCorrectionAsync()
+    {
+       return await _waterDataLogic.ToggleWaterFlowCorrectionAsync();
     }
 
     public async Task<DisplayPlantTemperatureDto?> CheckWaterTemperatureAsync()
