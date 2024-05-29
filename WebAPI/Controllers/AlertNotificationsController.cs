@@ -9,18 +9,25 @@ namespace Sep4Backend.Controllers
     [Route("[controller]")]
     public class AlertNotificationsController : ControllerBase
     {
-        private readonly IAlertNotificationService _alertNotificationService;
+        private readonly IAlertNotificationLogic _alertNotificationLogic;
 
-        public AlertNotificationsController(IAlertNotificationService alertNotificationService)
+        public AlertNotificationsController(IAlertNotificationLogic alertNotificationLogic)
         {
-            _alertNotificationService = alertNotificationService;
+            _alertNotificationLogic = alertNotificationLogic;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AlertNotificationDto>>> GetAsync()
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AlertNotificationDto>> GetAsync(int id)
         {
-            var alerts = await _alertNotificationService.GetAllAsync();
-            return Ok(alerts);
+            try
+            {
+                var alert = await _alertNotificationLogic.GetAlertNotificationAsync(id);
+                return Ok(alert);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPatch("{id}")]
@@ -28,7 +35,7 @@ namespace Sep4Backend.Controllers
         {
             try
             {
-                await _alertNotificationService.UpdateAlertNotificationAsync(id, updateDto);
+                await _alertNotificationLogic.UpdateAlertNotificationAsync(id, updateDto.ThresholdMin, updateDto.ThresholdMax);
                 return Ok();
             }
             catch (Exception ex)

@@ -1,4 +1,6 @@
 using Application.LogicInterfaces;
+using Application.ServiceInterfaces;
+using Application.Services;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
@@ -9,58 +11,60 @@ namespace Application.Logic
     public class AlertNotificationLogic : IAlertNotificationLogic
     {
         private readonly PlantDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public AlertNotificationLogic(PlantDbContext context)
+        public AlertNotificationLogic(PlantDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
-        public async Task CreateAlertNotificationAsync(AlertNotificationDto dto)
+        public async Task<AlertNotificationDto> GetAlertNotificationAsync(int id)
         {
-            var alert = new AlertNotification
+            var alert = await _context.AlertNotifications
+                .Where(a => a.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (alert == null) throw new KeyNotFoundException("Alert notification not found");
+
+            return new AlertNotificationDto
             {
-                ParameterType = dto.ParameterType,
-                ThresholdMin = dto.ThresholdMin,
-                ThresholdMax = dto.ThresholdMax,
-                Email = dto.Email
+                Id = alert.Id,
+                ParameterType = alert.ParameterType,
+                ThresholdMin = alert.ThresholdMin,
+                ThresholdMax = alert.ThresholdMax,
+                Email = alert.Email
             };
-            _context.AlertNotifications.Add(alert);
-            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<AlertNotificationDto>> GetAlertNotificationsAsync()
-        {
-            return await _context.AlertNotifications
-                .Select(a => new AlertNotificationDto
-                {
-                    Id = a.Id,
-                    ParameterType = a.ParameterType,
-                    ThresholdMin = a.ThresholdMin,
-                    ThresholdMax = a.ThresholdMax,
-                    Email = a.Email
-                }).ToListAsync();
-        }
-
-        public async Task UpdateAlertNotificationAsync(AlertNotificationDto dto)
-        {
-            var alert = await _context.AlertNotifications.FindAsync(dto.Id);
-            if (alert == null) throw new Exception("Alert notification not found");
-
-            alert.ParameterType = dto.ParameterType;
-            alert.ThresholdMin = dto.ThresholdMin;
-            alert.ThresholdMax = dto.ThresholdMax;
-            alert.Email = dto.Email;
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAlertNotificationAsync(int id)
+        public async Task UpdateAlertNotificationAsync(int id, double thresholdMin, double thresholdMax)
         {
             var alert = await _context.AlertNotifications.FindAsync(id);
             if (alert == null) throw new Exception("Alert notification not found");
 
-            _context.AlertNotifications.Remove(alert);
+            alert.ThresholdMin = thresholdMin;
+            alert.ThresholdMax = thresholdMax;
+
             await _context.SaveChangesAsync();
+        }
+
+        public async Task CheckAndTriggerAlertsAsync(string parameterType, double? reading)
+        {
+            if (reading == null)
+                return;
+
+            var alerts = await _context.AlertNotifications
+                .Where(a => a.ParameterType == parameterType)
+                .ToListAsync();
+
+            foreach (var alert in alerts)
+            {
+                if (reading <= alert.ThresholdMin || reading >= alert.ThresholdMax)
+                {
+                    // Send email logic here
+                    await _emailService.SendEmailAsync(alert.Email, $"Alert for {parameterType}", $"The value for {parameterType} has reached {reading}");
+                }
+            }
         }
     }
 }
