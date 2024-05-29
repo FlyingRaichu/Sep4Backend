@@ -53,7 +53,7 @@ namespace Application.Services
             // Clamp integral value if it overflows below 0% or over 100%
             if (output is 0 or 100)
             {
-                _integralSum -= error * deltaTimeInSeconds;  // Undo integral term update if output is clamped
+                _integralSum -= error * deltaTimeInSeconds;
             }
             
             return (int)Math.Floor(output);

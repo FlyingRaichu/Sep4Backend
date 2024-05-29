@@ -49,7 +49,7 @@ public class ConnectionController : IConnectionController
                 var stream = _client.GetStream();
 
                 // Convert API parameters to bytes and send to Arduino
-                var requestData = Encoding.ASCII.GetBytes(apiParameters); //TODO Put encryption here pls
+                var requestData = Encoding.ASCII.GetBytes(apiParameters);
                 await stream.WriteAsync(requestData);
 
                 // Read response from Arduino

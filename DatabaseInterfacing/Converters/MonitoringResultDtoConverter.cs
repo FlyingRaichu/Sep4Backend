@@ -66,6 +66,7 @@ namespace DatabaseInterfacing.Converters
             throw new JsonException();
         }
 
+        //No need for implementation, required for the interface implementation, however
         public override void Write(Utf8JsonWriter writer, MonitoringResultDto value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
