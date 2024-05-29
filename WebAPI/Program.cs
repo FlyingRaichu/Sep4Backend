@@ -19,6 +19,11 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var smtpServer = builder.Configuration["Smtp:Server"];
+var smtpPort = int.Parse(builder.Configuration["Smtp:Port"]);
+var smtpUsername = builder.Configuration["Smtp:Username"];
+var smtpPassword = builder.Configuration["Smtp:Password"];
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -26,14 +31,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConnectionController, ConnectionController>();
 builder.Services.AddScoped<IPlantDataLogic, PlantDataLogic>();
+builder.Services.AddScoped<IWaterDataLogic, WaterDataLogic>();
+builder.Services.AddScoped<IAirDataLogic, AirDataLogic>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
 builder.Services.AddScoped<ITemplateLogic, TemplateLogic>();
 builder.Services.AddScoped<IThresholdConfigurationService, ThresholdConfigurationService>();
 builder.Services.AddScoped<IAlertNotificationLogic, AlertNotificationLogic>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEmailService>(new EmailService(smtpServer, smtpPort, smtpUsername, smtpPassword));
 builder.Services.AddScoped<IAlertNotificationService, AlertNotificationService>();
-
-ConfigureEmailService(builder.Services, builder.Configuration);
 
 builder.Services.AddDbContext<PlantDbContext>(options => options.UseNpgsql(DatabaseUtils.GetConnectionString(),
     b => b.MigrationsAssembly("WebAPI")));
@@ -89,25 +94,3 @@ _ = Task.Run(async () => await connectionController.EstablishConnectionAsync(23)
 // Run the application
 app.MapControllers();
 app.Run();
-
-void ConfigureEmailService(IServiceCollection services, IConfiguration configuration)
-{
-    var smtpConfig = configuration.GetSection("Smtp");
-    var smtpServer = smtpConfig["Server"];
-    var smtpPort = smtpConfig["Port"];
-    var smtpUsername = smtpConfig["Username"];
-    var smtpPassword = smtpConfig["Password"];
-
-    if (string.IsNullOrEmpty(smtpServer) || string.IsNullOrEmpty(smtpPort) ||
-        string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword))
-    {
-        throw new InvalidOperationException("SMTP configuration is missing or invalid.");
-    }
-
-   /* if (!int.TryParse(smtpPort, out int port))
-    {
-        throw new InvalidOperationException("SMTP port is invalid.");
-    }*/
-
-   // services.PostConfigure<EmailService>(emailService => emailService.Configure(smtpServer, port, smtpUsername, smtpPassword));
-}

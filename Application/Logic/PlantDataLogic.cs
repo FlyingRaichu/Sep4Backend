@@ -22,6 +22,8 @@ public class PlantDataLogic : IPlantDataLogic
     private readonly IThresholdConfigurationService _configurationService;
     private readonly IAlertNotificationService _alertNotificationService;
     private readonly IOutputService _outputService;
+    private readonly IWaterDataLogic _waterDataLogic;
+    private readonly IAirDataLogic _airDataLogic;
     public bool WaterFlowCorrectionEnabled { get; set; } = false;
 
     private static string TEST = @"
@@ -50,11 +52,13 @@ public class PlantDataLogic : IPlantDataLogic
 
     public PlantDataLogic(IConnectionController connectionController,
         IThresholdConfigurationService configurationService,
-        IAlertNotificationService alertNotificationService)
+        IAlertNotificationService alertNotificationService, IWaterDataLogic waterDataLogic, IAirDataLogic airDataLogic)
     {
         _connectionController = connectionController;
         _configurationService = configurationService;
         _alertNotificationService = alertNotificationService;
+        _waterDataLogic = waterDataLogic;
+        _airDataLogic = airDataLogic;
         _outputService = new OutputService(_connectionController);
     }
 
@@ -158,306 +162,61 @@ public class PlantDataLogic : IPlantDataLogic
         }
     }
 
-    public async Task<DisplayPlantTemperatureDto?>
-        CheckWaterTemperatureAsync()
+    public async Task<DisplayPlantTemperatureDto?> CheckWaterTemperatureAsync()
     {
-        var jsonString =
-            await _connectionController
-                .SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        //For testing remove // from line bellow 
-        //var jsonString = TEST;
-
-        //Deserialize the JSON string into a MonitoringResultDto object
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        //Calling the object created from the JSON config
-        var configuration = await _configurationService.GetConfigurationAsync();
-
-        var status = DetermineStatus("waterTemperature", plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle(),
-            configuration);
-
-        Console.WriteLine($"Plant water temp is: {plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle()}");
-        return new DisplayPlantTemperatureDto(plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle(), status);
+        return await _waterDataLogic.CheckWaterTemperatureAsync();
     }
 
     public async Task<DisplayPlantPhDto> GetPhLevelAsync()
     {
-        // For Testing: Remove Comments from json, and comment out "string response = ..."
-
-        var response = TEST;
-
-        //string response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-        
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("waterPh", plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle(), configuration);
-        return new DisplayPlantPhDto() { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle() };
+        return await _waterDataLogic.GetPhLevelAsync();
     }
 
     public async Task<DisplayPlantECDto?> CheckECAsync()
     {
-        var jsonString =
-            await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        //var jsonString = TEST;
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("waterConductivity", plantData.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle(),
-            configuration);
-
-        Console.WriteLine($"Plant water temp is: {plantData!.Readings.FirstOrDefault()?.Measurements["waterConductivity"]}");
-        return new DisplayPlantECDto(plantData!.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle(), status);
+        return await _waterDataLogic.CheckECAsync();
     }
 
     public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
     {
-        var response = TEST;
-        //var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var reading = plantData.Readings.First().Measurements["waterFlow"];
-        var status = DetermineStatus("waterFlow", reading.GetSingle(), configuration);
-
-        var dto = new DisplayPlantWaterFlowDto()
-        {
-            Status = status,
-            WaterFlow = (float)plantData?.Readings?.FirstOrDefault()?.Measurements["waterFlow"].GetSingle()!
-        };
-        
-        var waterFlowValues = configuration.Thresholds.FirstOrDefault(type => type.Type.Equals("waterFlow"))!;
-        
-        var perfectThreshold = (waterFlowValues.WarningMin + waterFlowValues.WarningMax) / 2;
-
-        if (!WaterFlowCorrectionEnabled) return dto;
-        var pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
-
-        await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading.GetSingle(), 5));
-
-        return dto;
+        return await _waterDataLogic.CheckWaterFlowAsync();
     }
 
     public async Task<DisplayPlantWaterLevelDto> CheckWaterLevelAsync()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("waterLevel", plantData.Readings.FirstOrDefault()?.Measurements["waterLevel"].GetSingle(), configuration);
-
-        var dto = new DisplayPlantWaterLevelDto
-        {
-            Status = status,
-            WaterLevelInMillimeters = (float)plantData?.Readings?.FirstOrDefault()?.Measurements["waterLevel"].GetSingle()!
-        };
-
-        return dto;
+        return await _waterDataLogic.CheckWaterLevelAsync();
     }
 
     public async Task<DisplayAirTemperatureDto> CheckAirTemperatureAsync()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("airTemperature", plantData.Readings?.FirstOrDefault()?.Measurements["airTemperature"].GetSingle(),
-            configuration);
-
-        var dto = new DisplayAirTemperatureDto()
-        {
-            Status = status,
-            AirTemperatureInC = (float)plantData.Readings?.FirstOrDefault()?.Measurements["airTemperature"].GetSingle()!
-        };
-
-        return dto;
+        return await _airDataLogic.CheckAirTemperatureAsync();
     }
 
     public async Task<DisplayAirHumidityDto> CheckAirHumidityAsync()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("airHumidity", plantData.Readings?.FirstOrDefault()?.Measurements["airHumidity"].GetSingle(), configuration);
-
-        var dto = new DisplayAirHumidityDto()
-        {
-            Status = status,
-            AirHumidityPercentage = (float)plantData.Readings?.FirstOrDefault()?.Measurements["airHumidity"].GetSingle()!
-        };
-
-        return dto;
+        return await _airDataLogic.CheckAirHumidityAsync();
     }
 
     public async Task<DisplayAirCO2Dto> CheckAirCO2Async()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("airCo2", plantData.Readings?.FirstOrDefault()?.Measurements["airCo2"].GetSingle(), configuration);
-
-        var dto = new DisplayAirCO2Dto()
-        {
-            Status = status,
-            AirCO2 = plantData.Readings?.FirstOrDefault()?.Measurements["airCo2"].GetSingle()!
-        };
-
-        return dto;
+        return await _airDataLogic.CheckAirCO2Async();
     }
 
     public async Task<DisplayVPDLevelDto> CheckVPDAsync()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var airTemperature = plantData.Readings?.FirstOrDefault()?.Measurements["airTemperature"];
-        var airHumidity = plantData.Readings?.FirstOrDefault()?.Measurements["airHumidity"];
-
-        if (airTemperature == null || airHumidity == null) throw new Exception("Insufficient data to calculate VPD.");
-
-        var vpd = CalculateVPD(airTemperature.Value.GetSingle(), airHumidity.Value.GetSingle());
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("vpdLevel", vpd, configuration);
-
-        return new DisplayVPDLevelDto()
-        {
-            Status = status,
-            VPDLevel = vpd
-        };
+        return await _airDataLogic.CheckVPDAsync();
     }
 
     public async Task<DisplayDewPointDto> CheckDewPointAsync()
     {
-        var response = TEST;
-        // var response = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
-
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var airTemperature = plantData.Readings?.FirstOrDefault()?.Measurements["airTemperature"];
-        var airHumidity = plantData.Readings?.FirstOrDefault()?.Measurements["airHumidity"];
-
-        if (airTemperature == null || airHumidity == null)
-            throw new Exception("Insufficient data to calculate Dew Point.");
-
-        var dewPoint = CalculateDewPoint(airTemperature.Value.GetSingle(), airHumidity.Value.GetSingle());
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("dewPoint", dewPoint, configuration);
-
-        return new DisplayDewPointDto()
-        {
-            Status = status,
-            DewPoint = dewPoint
-        };
+        return await _airDataLogic.CheckDewPointAsync();
     }
 
     public async Task<DisplayLightLevelDto> CheckLightLevelAsync()
     {
-        var response = TEST;
-        var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(response, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-        if (plantData == null) throw new Exception("Plant Data object is null or empty.");
-
-        var configuration = await _configurationService.GetConfigurationAsync();
-        var status = DetermineStatus("lightLevel", plantData.Readings.FirstOrDefault()?.Measurements["lightLevel"].GetSingle(), configuration);
-
-        return new DisplayLightLevelDto(plantData.Readings.FirstOrDefault()?.Measurements["lightLevel"].GetSingle(), status);
+        return await _airDataLogic.CheckLightLevelAsync();
     }
 
-    private static float CalculateVPD(float temperature, float humidity)
-    {
-        // Calculation for VPD
-        float es = 0.6108f * (float)Math.Exp((17.27f * temperature) / (temperature + 237.3f));
-        float ea = humidity / 100 * es;
-        return es - ea;
-    }
-
-    private static float CalculateDewPoint(float temperature, float humidity)
-    {
-        // Calculation for Dew Point
-        double a = 17.27;
-        double b = 237.7;
-        double alpha = ((a * temperature) / (b + temperature)) + Math.Log(humidity / 100.0);
-        return (float)((b * alpha) / (a - alpha));
-    }
-
-    private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
-    {
-        var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
-        if (threshold == null) throw new Exception("Threshold does not exist!");
-
-        var isWarningRange =
-            (reading <= threshold.WarningMin && reading > threshold.Min) ||
-            (reading >= threshold.WarningMax && reading < threshold.Max);
-
-        var isDangerRange = reading >= threshold.Max || reading <= threshold.Min;
-        if (isDangerRange) return "Dang";
-
-        return isWarningRange ? "Warn" : "Norm";
-    }
 
     // public async Task<ICollection<MeasurementDto>> GetAllMeasurementsAsync()
     // {

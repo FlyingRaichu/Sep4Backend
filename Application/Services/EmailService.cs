@@ -1,18 +1,17 @@
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using Application.ServiceInterfaces;
 
 namespace Application.Services
 {
     public class EmailService : IEmailService
     {
-        private string _smtpServer;
-        private int _smtpPort;
-        private string _smtpUsername;
-        private string _smtpPassword;
+        private readonly string _smtpServer;
+        private readonly int _smtpPort;
+        private readonly string _smtpUsername;
+        private readonly string _smtpPassword;
 
-        public void Configure(string smtpServer, int smtpPort, string smtpUsername, string smtpPassword)
+        public EmailService(string smtpServer, int smtpPort, string smtpUsername, string smtpPassword)
         {
             _smtpServer = smtpServer;
             _smtpPort = smtpPort;
@@ -22,7 +21,7 @@ namespace Application.Services
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var smtpClient = new SmtpClient(_smtpServer)
+            using var smtpClient = new SmtpClient(_smtpServer)
             {
                 Port = _smtpPort,
                 Credentials = new NetworkCredential(_smtpUsername, _smtpPassword),

@@ -1,10 +1,15 @@
+using System.Globalization;
 using System.Text.Json;
 using Application.LogicInterfaces;
 using Application.ServiceInterfaces;
+using Application.Services;
 using DatabaseInterfacing;
 using DatabaseInterfacing.Context;
 using DatabaseInterfacing.Domain.DTOs;
 using DatabaseInterfacing.Domain.EntityFramework;
+using IoTInterfacing.Interfaces;
+using IoTInterfacing.Util;
+using IoTInterfacing.Implementations;
 using IoTInterfacing.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,46 +20,33 @@ namespace Application.Logic
         private readonly IConnectionController _connectionController;
         private readonly IThresholdConfigurationService _configurationService;
         private readonly IAlertNotificationService _alertNotificationService;
+        private readonly IOutputService _outputService;
+        public bool WaterFlowCorrectionEnabled { get; set; } = false;
 
-        public WaterDataLogic(IConnectionController connectionController, IThresholdConfigurationService configurationService, IAlertNotificationService alertNotificationService)
+        private static string TEST = @"
+        {
+        ""name"": ""monitoring_results"",
+        ""readings"":     [{
+                        ""waterConductivity"":    2622
+                }, {
+                        ""waterPh"":      6
+                }, {
+                        ""waterTemperature"":     15
+                }, {
+                        ""waterFlow"":    0
+                }, {
+                        ""waterLevel"":   16
+                }]
+}";
+
+        public WaterDataLogic(IConnectionController connectionController,
+            IThresholdConfigurationService configurationService,
+            IAlertNotificationService alertNotificationService)
         {
             _connectionController = connectionController;
             _configurationService = configurationService;
             _alertNotificationService = alertNotificationService;
-        }
-
-        public async Task<IEnumerable<PlantData>> GetWaterDataAsync(SearchPlantDataDto searchDto)
-        {
-            await using var dbContext = new PlantDbContext(DatabaseUtils.BuildConnectionOptions());
-
-            var query = dbContext.PlantData.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchDto.PlantName))
-            {
-                query = query.Where(plant => plant.PlantName.Contains(searchDto.PlantName));
-            }
-
-            if (searchDto.WaterTemperature != null)
-            {
-                query = query.Where(plant => plant.WaterTemperature.Equals(searchDto.WaterTemperature));
-            }
-
-            if (searchDto.PhLevel != null)
-            {
-                query = query.Where(plant => plant.PhLevel.Equals(searchDto.PhLevel));
-            }
-
-            if (searchDto.WaterFlow != null)
-            {
-                query = query.Where(plant => plant.WaterFlow.Equals(searchDto.WaterFlow));
-            }
-
-            if (searchDto.WaterEC != null)
-            {
-                query = query.Where(plant => plant.WaterEC.Equals(searchDto.WaterEC));
-            }
-
-            return await query.ToListAsync();
+            _outputService = new OutputService(_connectionController);
         }
 
         public async Task<DisplayPlantTemperatureDto?> CheckWaterTemperatureAsync()
@@ -64,9 +56,9 @@ namespace Application.Logic
             if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
             var configuration = await _configurationService.GetConfigurationAsync();
-            var status = DetermineStatus("water_temperature", plantData.Readings.FirstOrDefault()?.WaterTemperature, configuration);
+            var status = DetermineStatus("waterTemperature", plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle(), configuration);
 
-            return new DisplayPlantTemperatureDto(plantData.Readings.FirstOrDefault()?.WaterTemperature, status);
+            return new DisplayPlantTemperatureDto(plantData.Readings.FirstOrDefault()?.Measurements["waterTemperature"].GetSingle(), status);
         }
 
         public async Task<DisplayPlantPhDto> GetPhLevelAsync()
@@ -76,26 +68,21 @@ namespace Application.Logic
             if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
             var configuration = await _configurationService.GetConfigurationAsync();
-            var status = DetermineStatus("water_ph", plantData.Readings.FirstOrDefault()?.WaterPhLevel, configuration);
+            var status = DetermineStatus("waterPh", plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle(), configuration);
 
-            return new DisplayPlantPhDto { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.WaterPhLevel };
+            return new DisplayPlantPhDto { Status = status, PhLevel = plantData.Readings.FirstOrDefault()?.Measurements["waterPh"].GetSingle() };
         }
 
-        public Task<DisplayPlantECDto?> CheckECAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<DisplayPlantECDto?> CheckWaterECAsync()
+        public async Task<DisplayPlantECDto?> CheckECAsync()
         {
             var jsonString = await _connectionController.SendRequestToArduinoAsync(ApiParameters.DataRequest);
             var plantData = JsonSerializer.Deserialize<MonitoringResultDto>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
             var configuration = await _configurationService.GetConfigurationAsync();
-            var status = DetermineStatus("water_conductivity", plantData.Readings.FirstOrDefault()?.WaterConductivity, configuration);
+            var status = DetermineStatus("waterConductivity", plantData.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle(), configuration);
 
-            return new DisplayPlantECDto(plantData.Readings.FirstOrDefault()?.WaterConductivity, status);
+            return new DisplayPlantECDto(plantData.Readings.FirstOrDefault()?.Measurements["waterConductivity"].GetSingle(), status);
         }
 
         public async Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync()
@@ -105,9 +92,24 @@ namespace Application.Logic
             if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
             var configuration = await _configurationService.GetConfigurationAsync();
-            var status = DetermineStatus("water_flow", plantData.Readings.FirstOrDefault()?.WaterFlow, configuration);
+            var reading = plantData.Readings.First().Measurements["waterFlow"];
+            var status = DetermineStatus("waterFlow", reading.GetSingle(), configuration);
 
-            return new DisplayPlantWaterFlowDto { Status = status, WaterFlow = (float)plantData.Readings.FirstOrDefault()?.WaterFlow! };
+            var dto = new DisplayPlantWaterFlowDto
+            {
+                Status = status,
+                WaterFlow = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterFlow"].GetSingle()!
+            };
+
+            var waterFlowValues = configuration.Thresholds.FirstOrDefault(type => type.Type.Equals("waterFlow"))!;
+            var perfectThreshold = (waterFlowValues.WarningMin + waterFlowValues.WarningMax) / 2;
+
+            if (!WaterFlowCorrectionEnabled) return dto;
+
+            var pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
+            await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading.GetSingle(), 5));
+
+            return dto;
         }
 
         public async Task<DisplayPlantWaterLevelDto> CheckWaterLevelAsync()
@@ -117,24 +119,24 @@ namespace Application.Logic
             if (plantData == null) throw new Exception("Plant Data object is null or empty.");
 
             var configuration = await _configurationService.GetConfigurationAsync();
-            var status = DetermineStatus("water_level", plantData.Readings.FirstOrDefault()?.WaterLevel, configuration);
+            var status = DetermineStatus("waterLevel", plantData.Readings.FirstOrDefault()?.Measurements["waterLevel"].GetSingle(), configuration);
 
-            return new DisplayPlantWaterLevelDto { Status = status, WaterLevelInMillimeters = (float)plantData.Readings.FirstOrDefault()?.WaterLevel! };
+            return new DisplayPlantWaterLevelDto
+            {
+                Status = status,
+                WaterLevelInMillimeters = (float)plantData.Readings.FirstOrDefault()?.Measurements["waterLevel"].GetSingle()!
+            };
         }
 
-        private string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
+        private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
         {
             var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
             if (threshold == null) throw new Exception("Threshold does not exist!");
 
-            var isWarningRange =
-                (reading <= threshold.WarningMin && reading > threshold.Min) ||
-                (reading >= threshold.WarningMax && reading < threshold.Max);
-
+            var isWarningRange = (reading <= threshold.WarningMin && reading > threshold.Min) || (reading >= threshold.WarningMax && reading < threshold.Max);
             var isDangerRange = reading >= threshold.Max || reading <= threshold.Min;
-            if (isDangerRange) return "Danger";
 
-            return isWarningRange ? "Warning" : "Normal";
+            return isDangerRange ? "Danger" : isWarningRange ? "Warning" : "Normal";
         }
     }
 }
