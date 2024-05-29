@@ -267,8 +267,8 @@ public async Task<ActionResult<IEnumerable<PlantData>>> GetAsync(
     {
         try
         {
-            _logic.WaterFlowCorrectionEnabled = !_logic.WaterFlowCorrectionEnabled;
-            return Ok();
+            var response = await _logic.ToggleWaterFlowCorrectionAsync();
+            return Ok(response);
         }
         catch (Exception e)
         {

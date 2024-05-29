@@ -128,6 +128,13 @@ namespace Application.Logic
             };
         }
 
+        public async Task<bool> ToggleWaterFlowCorrectionAsync()
+        {
+            WaterFlowCorrectionEnabled = !WaterFlowCorrectionEnabled;
+
+            return WaterFlowCorrectionEnabled;
+        }
+
         private static string DetermineStatus(string type, float? reading, ThresholdConfigurationDto config)
         {
             var threshold = config.Thresholds.FirstOrDefault(dto => dto.Type.Equals(type));
@@ -138,5 +145,6 @@ namespace Application.Logic
 
             return isDangerRange ? "Danger" : isWarningRange ? "Warning" : "Normal";
         }
+        
     }
 }

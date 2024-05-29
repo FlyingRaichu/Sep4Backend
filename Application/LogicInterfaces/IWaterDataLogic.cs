@@ -10,4 +10,5 @@ public interface IWaterDataLogic
     Task<DisplayPlantECDto?> CheckECAsync();
     Task<DisplayPlantWaterFlowDto> CheckWaterFlowAsync();
     Task<DisplayPlantWaterLevelDto> CheckWaterLevelAsync();
+    Task<bool> ToggleWaterFlowCorrectionAsync();
 }
