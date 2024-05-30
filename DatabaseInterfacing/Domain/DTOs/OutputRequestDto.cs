@@ -1,8 +1,13 @@
-﻿namespace DatabaseInterfacing.Domain.DTOs;
+﻿using System.Text.Json.Serialization;
+
+namespace DatabaseInterfacing.Domain.DTOs;
 
 public class OutputRequestDto
 {
+    [JsonPropertyName("requestType")]
     public string RequestType { get; set; }
+    
+    [JsonPropertyName("value")]
     public int Value { get; set; }
 
 

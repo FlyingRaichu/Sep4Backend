@@ -21,7 +21,7 @@ namespace Application.Logic
         private readonly IThresholdConfigurationService _configurationService;
         private readonly IAlertNotificationService _alertNotificationService;
         private readonly IOutputService _outputService;
-        public bool WaterFlowCorrectionEnabled { get; set; } = false;
+        public bool WaterFlowCorrectionEnabled { get; set; } = true;
 
         private static string TEST = @"
         {
@@ -107,7 +107,7 @@ namespace Application.Logic
             if (!WaterFlowCorrectionEnabled) return dto;
 
             IPidService pid = new PidService(0.5, 0.1, 0.1, perfectThreshold);
-            await _outputService.AlterPumpAsync("waterFlowCorrection", pid.Compute(reading.GetSingle(), 5));
+            await _outputService.AlterPumpAsync("waterFlowCorrection", 50);
 
             return dto;
         }

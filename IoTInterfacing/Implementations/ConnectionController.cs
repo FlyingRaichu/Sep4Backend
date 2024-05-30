@@ -53,7 +53,7 @@ public class ConnectionController : IConnectionController
                 await stream.WriteAsync(requestData);
 
                 // Read response from Arduino
-                var buffer = new byte[256];
+                var buffer = new byte[400];
                 var bytesRead = await stream.ReadAsync(buffer);
                 responseData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
